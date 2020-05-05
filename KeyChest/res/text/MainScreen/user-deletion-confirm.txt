@@ -1,0 +1,4 @@
+O usuário "%s"
+será removido do sistema.
+
+Deseja continuar?

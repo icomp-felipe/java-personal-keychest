@@ -46,4 +46,8 @@ public class Credentials {
 		return this.owner;
 	}
 
+	public Object[] getInsertFields() {
+		return new Object[]{ getService(), getLogin(), getPassword(), getOwner().getID() };
+	}
+
 }

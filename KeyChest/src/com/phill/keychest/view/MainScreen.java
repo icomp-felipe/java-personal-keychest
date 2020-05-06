@@ -5,7 +5,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
+import javax.swing.text.DefaultFormatter;
 
 import com.phill.keychest.bd.Database;
 import com.phill.keychest.controller.OwnerDAO;
@@ -66,6 +68,7 @@ public class MainScreen extends JFrame {
 		painelServico.setLayout(null);
 		
 		textServico = new JTextField();
+		textServico.addActionListener((event) -> listener_query());
 		textServico.setFont(fonte);
 		textServico.setForeground(color);
 		textServico.setBounds(12, 30, 385, 25);
@@ -112,8 +115,14 @@ public class MainScreen extends JFrame {
 		botaoUsuarioDeleta.setBounds(408, 30, 30, 25);
 		painelUsuario.add(botaoUsuarioDeleta);
 		
+		JButton botaoCredencialAdd = new JButton(addIcon);
+		botaoCredencialAdd.setToolTipText("Adiciona novas credenciais ao sistema");
+		botaoCredencialAdd.addActionListener((event) -> action_credential_new());
+		botaoCredencialAdd.setBounds(95, 129, 30, 25);
+		getContentPane().add(botaoCredencialAdd);
+		
 		JPanel painelListagem = new JPanel();
-		painelListagem.setBorder(instance.getTitledBorder("Listagem"));
+		painelListagem.setBorder(instance.getTitledBorder("Listagem            "));
 		painelListagem.setBounds(12, 134, 936, 350);
 		getContentPane().add(painelListagem);
 		painelListagem.setLayout(null);
@@ -150,6 +159,28 @@ public class MainScreen extends JFrame {
 		action_fill_combo();
 		
 		setVisible(true);
+		
+	}
+	
+	private void action_credential_new() {
+		
+		CredentialsAdd screen = new CredentialsAdd();
+		
+		int option = JOptionPane.showConfirmDialog(this,
+				screen,
+				"Nova Credencial",
+				JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.PLAIN_MESSAGE);
+
+		
+		
+	}
+
+	private void listener_query() {
+		
+		final String text = textServico.getText();
+		
+		
 		
 	}
 	
@@ -258,5 +289,4 @@ public class MainScreen extends JFrame {
 		}
 		
 	}
-	
 }

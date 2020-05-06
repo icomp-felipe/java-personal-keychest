@@ -1,43 +1,52 @@
 package com.phill.keychest.view;
 
 import java.awt.*;
-import java.sql.SQLException;
-import java.util.ArrayList;
-
+import java.sql.*;
+import java.util.*;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
-import javax.swing.text.DefaultFormatter;
-
-import com.phill.keychest.bd.Database;
-import com.phill.keychest.controller.OwnerDAO;
-import com.phill.keychest.model.Owner;
+import com.phill.keychest.bd.*;
+import com.phill.keychest.model.*;
+import com.phill.keychest.controller.*;
 import com.phill.libs.*;
 
+/** Tela principal do sistema de gerenciamento de credenciais.
+ *  @author Felipe André
+ *  @version 1.0, 04/05/2020 */
 public class MainScreen extends JFrame {
 	
+	// Serial da JFrame
 	private static final long serialVersionUID = 1L;
-	private JTextField textServico;
-	private JButton botaoUsuarioAtualiza, botaoUsuarioDeleta;
-	private JComboBox<String> comboBox;
 	
+	// Atributos gráficos
+	private final JTextField textServico;
+	private final JButton botaoUsuarioAtualiza, botaoUsuarioDeleta;
+	private final JComboBox<String> comboUsuarios;
+	private final JLabel labelInfo;
+	
+	// Atributos gráficos (Tabela)
 	private final JTable tableResultado;
     private final DefaultTableModel modelo;
-    private final String[] colunas = new String [] {"Serviço","Usuário","Login","Senha"};
-	
-	private ArrayList<Owner> ownerList;
+    private final String[] colunas = new String [] {"Serviço","Usuário","Login","Senha", "Tamanho"};
 
+    // Atributos dinâmicos
+    private Thread waitThread;
+	private ArrayList<Owner> ownerList;
+	private ArrayList<Credentials> credentialsList;
+
+	/** Método de teste (main) */
 	public static void main(String[] args) throws SQLException {
 		
-		Database.LOCAL.connect("x","y");
 		
 		new MainScreen();
 		
 	}
 
+	/** Constrói a interface gráfica e inicializa as variáveis de controle */
 	public MainScreen() {
 		super("KeyChest - build 20200504");
 		
+		// Inicializando atributos gráficos
 		GraphicsHelper instance = GraphicsHelper.getInstance();
 		
 		Font  fonte = instance.getFont ();
@@ -52,7 +61,7 @@ public class MainScreen extends JFrame {
 		setSize(960,560);
 		setLocationRelativeTo(null);
 		setResizable(false);
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);		// Tira a função do botão de fechar, pra usar apenas o dispose()
 		getContentPane().setLayout(null);
 		
 		JPanel painelParametros = new JPanel();
@@ -68,7 +77,7 @@ public class MainScreen extends JFrame {
 		painelServico.setLayout(null);
 		
 		textServico = new JTextField();
-		textServico.addActionListener((event) -> listener_query());
+		textServico.addKeyListener((KeyboardAdapter) (event) -> listener_query());
 		textServico.setFont(fonte);
 		textServico.setForeground(color);
 		textServico.setBounds(12, 30, 385, 25);
@@ -90,12 +99,13 @@ public class MainScreen extends JFrame {
 		painelUsuario.setBounds(474, 25, 450, 70);
 		painelParametros.add(painelUsuario);
 		
-		comboBox = new JComboBox<String>();
-		comboBox.setFont(fonte);
-		comboBox.setForeground(color);
-		comboBox.addActionListener((event) -> listener_combo());
-		comboBox.setBounds(12, 30, 300, 25);
-		painelUsuario.add(comboBox);
+		comboUsuarios = new JComboBox<String>();
+		comboUsuarios.setFont(fonte);
+		comboUsuarios.setForeground(color);
+		comboUsuarios.addActionListener((event) -> listener_combo());
+		comboUsuarios.addActionListener((event) -> listener_query());
+		comboUsuarios.setBounds(12, 30, 300, 25);
+		painelUsuario.add(comboUsuarios);
 		
 		JButton botaoUsuarioCria = new JButton(addIcon);
 		botaoUsuarioCria.addActionListener((event) -> action_create_user());
@@ -134,99 +144,118 @@ public class MainScreen extends JFrame {
 		tableResultado.addMouseListener(new TableMouseListener(tableResultado));
 		tableResultado.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
-		/*final DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		tableResultado.getColumnModel().getColumn(3).setCellRenderer(new PasswordFieldTableCellRenderer());
+		tableResultado.getColumnModel().getColumn(3).setCellEditor  (new DefaultCellEditor(new JPasswordField()));
+		
+		final DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 		
 		TableColumnModel columnModel = tableResultado.getColumnModel();
 		
-		columnModel.getColumn(0).setCellRenderer(centerRenderer);
-		columnModel.getColumn(2).setCellRenderer(centerRenderer);
-		columnModel.getColumn(3).setCellRenderer(centerRenderer);
+		columnModel.getColumn(4).setCellRenderer(centerRenderer);
 		
-		columnModel.getColumn(0).setPreferredWidth(5);
-		columnModel.getColumn(1).setPreferredWidth(250);*/
+		columnModel.getColumn(0).setPreferredWidth(165);
+		columnModel.getColumn(1).setPreferredWidth(195);
+		columnModel.getColumn(2).setPreferredWidth(195);
+		columnModel.getColumn(3).setPreferredWidth(95);
+		columnModel.getColumn(4).setPreferredWidth(25);
 		
 		JScrollPane scrollPane = new JScrollPane(tableResultado);
 		scrollPane.setBounds(12, 35, 912, 303);
 		painelListagem.add(scrollPane);
 		
-		JButton botaoSair = new JButton((Icon) null);
+		JButton botaoSair = new JButton();
 		botaoSair.addActionListener((event) -> dispose());
 		botaoSair.setToolTipText("Sai do sistema");
 		botaoSair.setBounds(918, 498, 30, 25);
 		getContentPane().add(botaoSair);
 		
+		labelInfo = new JLabel();
+		labelInfo.setFont(fonte);
+		labelInfo.setForeground(color);
+		labelInfo.setBounds(12, 496, 888, 25);
+		getContentPane().add(labelInfo);
+		
 		action_fill_combo();
+		onCreateOptionsPopupMenu();
 		
 		setVisible(true);
 		
 	}
 	
-	private void action_credential_new() {
+	/** Cria as opções do menu de popup da tabela */
+	private void onCreateOptionsPopupMenu() {
 		
-		CredentialsAdd screen = new CredentialsAdd();
+		JPopupMenu popupMenu = new JPopupMenu();
 		
-		int option = JOptionPane.showConfirmDialog(this,
-				screen,
-				"Nova Credencial",
-				JOptionPane.OK_CANCEL_OPTION,
-				JOptionPane.PLAIN_MESSAGE);
-
+		JMenuItem itemEditar = new JMenuItem("Editar");
+		itemEditar.addActionListener((event) -> action_table_edit());
+		popupMenu.add(itemEditar);
 		
+		JMenuItem itemExcluir = new JMenuItem("Excluir");
+		itemExcluir.addActionListener((event) -> action_table_delete());
+		popupMenu.add(itemExcluir);
 		
-	}
-
-	private void listener_query() {
+		popupMenu.addSeparator();
 		
-		final String text = textServico.getText();
+		JMenuItem itemCopiaLogin = new JMenuItem("Copiar Login");
+		itemCopiaLogin.addActionListener((event) -> action_table_copy_login());
+		popupMenu.add(itemCopiaLogin);
 		
+		JMenuItem itemCopiaPwd = new JMenuItem("Copiar Senha");
+		itemCopiaPwd.addActionListener((event) -> action_table_copy_pwd());
+		popupMenu.add(itemCopiaPwd);
 		
-		
-	}
-	
-	@Override
-	public void dispose() {
-		
-		try {
-			Database.LOCAL.disconnect();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		super.dispose();
+		tableResultado.setComponentPopupMenu(popupMenu);
 		
 	}
 	
-	private void action_fill_combo() {
-		
-		comboBox.removeAllItems();
-		comboBox.addItem("Todos");
-		
-		this.ownerList = OwnerDAO.list();
-		
-		for (Owner owner: this.ownerList)
-			comboBox.addItem(owner.getName());
-		
-	}
+	/************************** Implementação dos Listeners *******************************/
 	
+	/** Ajusta a visibilidade dos botões de edição de usuário. Estes só estão disponíveis
+	 *  quando algum usuário está selecionado. */
 	private void listener_combo() {
 		
-		boolean buttonVisibility = comboBox.getSelectedIndex() > 0;
+		boolean buttonVisibility = comboUsuarios.getSelectedIndex() > 0;
 
 		botaoUsuarioAtualiza.setEnabled(buttonVisibility);
 		botaoUsuarioDeleta  .setEnabled(buttonVisibility);
 		
 	}
 	
+	/** Realiza as buscas de credenciais do sistema de acordo com os parâmetros de entrada (serviço e usuário). */
+	private void listener_query() {
+		
+		// Recuperando o serviço e o usuário da tela
+		final String service = textServico.getText();
+		final Owner  owner   = comboUsuarios.getSelectedIndex() > 0 ? ownerList.get(comboUsuarios.getSelectedIndex()-1) : null;
+		
+		// Realizando a busca e atualizando a lista interna
+		this.credentialsList = CredentialsDAO.list(service,owner);
+		
+		// Atualizando a tabela com os novos dados
+		TableUtils.clear(modelo);
+		
+		for (Credentials credentials: this.credentialsList)
+			TableUtils.add(modelo,credentials);
+		
+	}
+	
+	/********************** Tratamento de Eventos de Usuários *****************************/
+	
+	/** Exibe a tela de criação de um novo usuário */
 	private void action_create_user() {
 		
+		// Exibindo o diálogo
 		String user = JOptionPane.showInputDialog("Digite um nome de usuário");
 		
+		// Se entrei com um nome válido...
 		if ((user != null) && (!user.isEmpty())) {
 			
+			// o insiro no banco de dados e...
 			boolean succeeded = OwnerDAO.insert(user);
 			
+			// exibo a mensagem de status.
 			if (succeeded)
 				AlertDialog.informativo("Novo usuário registrado!");
 			else
@@ -234,49 +263,35 @@ public class MainScreen extends JFrame {
 			
 		}
 		
+		// Por fim, atualizo o combo de usuários
 		action_fill_combo();
 		
 	}
 	
-	private void action_delete_user() {
-		
-		final int      index = comboBox .getSelectedIndex() - 1;
-		final Owner selected = ownerList.get(index);
-
-		String message = ResourceManager.getText(this,"user-deletion-confirm.txt",selected.getName());
-		int choice = AlertDialog.dialog(message);
-		
-		if (choice == AlertDialog.OK_OPTION) {
-			
-			boolean succeeded = OwnerDAO.delete(selected);
-			
-			if (succeeded)
-				AlertDialog.informativo("Usuário removido com sucesso!");
-			else
-				AlertDialog.erro("Falha ao remover usuário!\nTalvez ainda haja alguma credencial vinculada a ele no sistema.");
-			
-		}
-		
-		action_fill_combo();
-		
-	}
-	
+	/** Exibe a tela de edição de um usuário selecionado */
 	private void action_update_user() {
 		
+		// Exibindo o diálogo
 		String user = JOptionPane.showInputDialog("Digite um novo nome de usuário");
 		
+		// Se entrei com um nome válido...
 		if ((user != null) && (!user.isEmpty())) {
 		
-			final int      index = comboBox .getSelectedIndex() - 1;
+			// Recupero o objeto usuário selecionado do meu ArrayList interno, ...
+			final int      index = comboUsuarios.getSelectedIndex() - 1;
 			final Owner selected = ownerList.get(index);
 
+			// exibo um diálogo de confirmação de atualização...
 			String message = ResourceManager.getText(this,"user-update-confirm.txt",selected.getName());
 			int choice = AlertDialog.dialog(message);
 		
+			// e, se desejo mesmo atualizar...
 			if (choice == AlertDialog.OK_OPTION) {
 			
+				// atualizo os dados no banco e...
 				boolean succeeded = OwnerDAO.update(selected,user);
 			
+				// exibo uma mensagem de status
 				if (succeeded)
 					AlertDialog.informativo("Usuário atualizado com sucesso!");
 				else
@@ -284,9 +299,222 @@ public class MainScreen extends JFrame {
 			
 			}
 		
+			// Por fim, atualizo o combo de usuários 
 			action_fill_combo();
 			
 		}
 		
 	}
+	
+	/** Exibe a tela de remoção de um usuário selecionado */
+	private void action_delete_user() {
+		
+		// Aqui recupero o objeto usuário selecionado do meu ArrayList interno, ...
+		final int      index = comboUsuarios.getSelectedIndex() - 1;
+		final Owner selected = ownerList.get(index);
+
+		// exibo um diálogo de confirmação de exclusão...
+		String message = ResourceManager.getText(this,"user-deletion-confirm.txt",selected.getName());
+		int choice = AlertDialog.dialog(message);
+		
+		// e, se desejo mesmo excluir...
+		if (choice == AlertDialog.OK_OPTION) {
+			
+			// removo o usuário do banco e...
+			boolean succeeded = OwnerDAO.delete(selected);
+			
+			// exibo uma mensagem de status
+			if (succeeded)
+				AlertDialog.informativo("Usuário removido com sucesso!");
+			else
+				AlertDialog.erro("Falha ao remover usuário!\nTalvez ainda haja alguma credencial vinculada a ele no sistema.");
+			
+		}
+		
+		// Por fim, atualizo o combo de usuários 
+		action_fill_combo();
+		
+	}
+	
+	/********************** Tratamento de Eventos de Credenciais **************************/
+	
+	/** Exibe a tela de criação de uma nova credencial */
+	private void action_credential_new() {
+		
+		// Construindo a janela...
+		CredentialsAdd screen = new CredentialsAdd(ownerList);
+		
+		int option = JOptionPane.showConfirmDialog(this,
+				screen,
+				"Nova Credencial",
+				JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.PLAIN_MESSAGE);
+		
+		// se a opção, "OK" foi selecionada...
+		if (option == JOptionPane.OK_OPTION) {
+			
+			// salvo os dados no banco e atualizo a tabela
+			screen.commit();
+			listener_query();
+			
+		}
+		
+	}
+	
+	/******************** Tratamento de Eventos de Menu da Tabela *************************/
+	
+	/** Edita os dados de uma credencial selecionada da tabela */
+	private void action_table_edit() {
+		
+		// Recuperando a credencial associada na ArrayList
+		Credentials selected = tableResultado.getSelectedRow() >= 0 ? credentialsList.get(tableResultado.getSelectedRow()) : null;
+		
+		// Se algo foi selecionado...
+		if (selected != null) {
+			
+			// Construo a tela de edição...
+			CredentialsAdd screen = new CredentialsAdd(ownerList,selected);
+			
+			int option = JOptionPane.showConfirmDialog(this,
+					screen,
+					"Editar Credencial",
+					JOptionPane.OK_CANCEL_OPTION,
+					JOptionPane.PLAIN_MESSAGE);
+			
+			// e se a opção "OK" foi escolhida...
+			if (option == JOptionPane.OK_OPTION) {
+				
+				// salvo os novos dados no banco e atualizo a tabela
+				screen.commit();
+				listener_query();
+				
+			}
+			
+		}
+		
+	}
+	
+	/** Remove do banco de dados uma credencial selecionada na tabela */
+	private void action_table_delete() {
+		
+		// Recuperando a credencial associada na ArrayList
+		Credentials selected = tableResultado.getSelectedRow() >= 0 ? credentialsList.get(tableResultado.getSelectedRow()) : null;
+		
+		// Se algo foi selecionado...
+		if (selected != null) {
+			
+			// Construo a mensagem de aviso...
+			String message = ResourceManager.getText(this,"cred-deletion-confirm.txt",0);
+			int choice = AlertDialog.dialog(message);
+			
+			// e se a opção "OK" foi escolhida...
+			if (choice == AlertDialog.OK_OPTION) {
+				
+				// removo a credencial da base de dados e exibo uma mensagem
+				if (CredentialsDAO.delete(selected))
+					AlertDialog.informativo("Credencial removida com sucesso!");
+				else
+					AlertDialog.erro("Falha ao remover credencial.\nFavor verificar o console do sistema.");
+				
+			}
+			
+			// Atualiza a tabela
+			listener_query();
+			
+		}
+		
+	}
+	
+	/** Copia o login de uma linha selecionada para a área de transferência */
+	private void action_table_copy_login() {
+		
+		try {
+			
+			final String login = (String) modelo.getValueAt(tableResultado.getSelectedRow(),2);
+			
+			AlertDialog.pasteToClibpoard(login);
+			
+			showInfo("Login copiado para a área de transferência");
+			
+		}
+		catch (Exception exception) { }
+		
+	}
+	
+	/** Copia a senha de uma linha selecionada para a área de transferência */
+	private void action_table_copy_pwd() {
+		
+		try {
+			
+			final String pwd = (String) modelo.getValueAt(tableResultado.getSelectedRow(),3);
+			
+			AlertDialog.pasteToClibpoard(pwd);
+			
+			showInfo("Senha copiada para a área de transferência");
+			
+		}
+		catch (Exception exception) { }
+		
+	}
+	
+	/** Controla a exibição de mensagens na área inferior esquerda do programa.
+	 *  A cada execução, este método exibe por 5 segundos a mensagem na tela.
+	 *  Se uma mensagem já estava sendo exibida, ela é sobrescrita e o tempo, reiniciado.
+	 *  @param message - Mensagem a ser exibida no label de mensagens */
+	private void showInfo(String message) {
+		
+		// Exibindo a mensagem
+		Runnable job = () -> {
+			labelInfo.setText(message);
+			labelInfo.setVisible(true);
+		};
+		
+		SwingUtilities.invokeLater(job);
+		
+		// Aqui controlo a thread de tempo: se uma execução já estava ativa, interrompo-a
+		if ((waitThread != null) && waitThread.isAlive())
+			 waitThread.interrupt();
+		
+		// Declarando o trabalho: dormir por 5 segundos e depois sumir com a mensagem
+		Runnable sleepJob = () -> {
+			try {
+				Thread.sleep(5000);
+				SwingUtilities.invokeLater(() -> labelInfo.setVisible(false));
+			} catch (InterruptedException e) {}
+			
+		};
+		
+		// Executando o serviço propriamente dito
+		waitThread = new Thread(sleepJob);
+		waitThread.start();
+		
+	}
+
+	/************************** Implementação dos Utilitários *****************************/
+	
+	/** Inicializa o comboBox com os dados de usuário recuperados do banco */
+	private void action_fill_combo() {
+		
+		// Limpando o combo
+		comboUsuarios.removeAllItems();
+		comboUsuarios.addItem("Todos");
+		
+		// Atualizando a lista de usuários
+		this.ownerList = OwnerDAO.list();
+		
+		for (Owner owner: this.ownerList)
+			comboUsuarios.addItem(owner.getName());
+		
+	}
+	
+	@Override
+	/** Desconecta a aplicação do banco de dados e encerra o programa */
+	public void dispose() {
+		
+		try { Database.LOCAL.disconnect(); }
+		catch (SQLException exception) { exception.printStackTrace(); }
+		finally { super.dispose(); }
+		
+	}
+	
 }

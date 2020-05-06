@@ -1,0 +1,1 @@
+delete from `credentials` where `cred_id_pk` = %d;

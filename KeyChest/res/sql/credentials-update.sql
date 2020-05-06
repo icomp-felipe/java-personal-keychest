@@ -1,0 +1,1 @@
+update `credentials` set `cred_service` = "%s", `cred_login` = "%s", `cred_password` = "%s", `cred_owner_id` = %d where `cred_id_pk` = %d;

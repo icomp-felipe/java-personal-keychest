@@ -30,11 +30,57 @@ public class CredentialsDAO {
 		
 	}
 	
+	public static boolean update(final Credentials credentials) {
+		
+		try {
+			
+			String query = ResourceManager.getSQLString("credentials-update.sql",credentials.getUpdateFields());
+			Connection c = Database.LOCAL.getConnection();
+			Statement st = c.createStatement();
+			
+			System.out.println(query);
+			
+			st.executeUpdate(query);
+			
+			st.close();
+			c .close();
+			
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			return false;
+		}
+		
+		return true;
+		
+	}
+	
+	public static boolean delete(final Credentials credentials) {
+		
+		try {
+			
+			String query = ResourceManager.getSQLString("credentials-delete.sql",credentials.getID());
+			Connection c = Database.LOCAL.getConnection();
+			Statement st = c.createStatement();
+			
+			st.executeUpdate(query);
+			
+			st.close();
+			c .close();
+			
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			return false;
+		}
+		
+		return true;
+		
+	}
+	
 	public static ArrayList<Credentials> list(final String service, final Owner owner) {
 		
 		ArrayList<Credentials> credentialsList = null;
 		
-		String owner_id = (owner == null) ? "" : Integer.toString(owner.getID());
+		String owner_id = (owner == null) ? "%" : Integer.toString(owner.getID());
 		
 		try {
 			

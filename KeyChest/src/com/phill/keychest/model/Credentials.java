@@ -1,6 +1,8 @@
 package com.phill.keychest.model;
 
-public class Credentials {
+import com.phill.libs.Resumeable;
+
+public class Credentials implements Resumeable {
 	
 	private int id;
 	private String service, login, password;
@@ -48,6 +50,15 @@ public class Credentials {
 
 	public Object[] getInsertFields() {
 		return new Object[]{ getService(), getLogin(), getPassword(), getOwner().getID() };
+	}
+
+	public Object[] getUpdateFields() {
+		return new Object[] { getService(), getLogin(), getPassword(), getOwner().getID(), getID() };
+	}
+	
+	@Override
+	public Object[] getResume() {
+		return new Object[] { getService(), getOwner().getName(), getLogin(), getPassword(), getPassword().length() };
 	}
 
 }

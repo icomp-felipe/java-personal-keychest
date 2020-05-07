@@ -21,7 +21,10 @@ public class OwnerDAO {
 			st.close();
 			c .close();
 			
-		} catch (Exception exception) {
+		} catch (SQLIntegrityConstraintViolationException exception) {
+			return false;
+		}
+		catch (Exception exception) {
 			exception.printStackTrace();
 			return false;
 		}
@@ -43,7 +46,10 @@ public class OwnerDAO {
 			st.close();
 			c .close();
 			
-		} catch (Exception exception) {
+		} catch (SQLIntegrityConstraintViolationException exception) {
+			return false;
+		}
+		catch (Exception exception) {
 			exception.printStackTrace();
 			return false;
 		}
@@ -65,7 +71,10 @@ public class OwnerDAO {
 			st.close();
 			c .close();
 			
-		} catch (Exception exception) {
+		} catch (SQLIntegrityConstraintViolationException exception) {
+			return false;
+		}
+		catch (Exception exception) {
 			exception.printStackTrace();
 			return false;
 		}

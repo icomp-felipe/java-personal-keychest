@@ -44,6 +44,10 @@ public class Credentials implements Resumeable {
 		return this.password;
 	}
 	
+	public int getPasswordLength() {
+		return (this.password == null) ? 0 : this.password.length();
+	}
+	
 	public Owner getOwner() {
 		return this.owner;
 	}
@@ -58,7 +62,7 @@ public class Credentials implements Resumeable {
 	
 	@Override
 	public Object[] getResume() {
-		return new Object[] { getService(), getOwner().getName(), getLogin(), getPassword(), getPassword().length() };
+		return new Object[] { getService(), getOwner().getName(), getLogin(), getPassword(), getPasswordLength() };
 	}
 
 }

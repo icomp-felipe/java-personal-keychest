@@ -37,7 +37,6 @@ public class MainScreen extends JFrame {
 	/** Método de teste (main) */
 	public static void main(String[] args) throws SQLException {
 		
-		
 		new MainScreen();
 		
 	}
@@ -48,6 +47,12 @@ public class MainScreen extends JFrame {
 		
 		// Inicializando atributos gráficos
 		GraphicsHelper instance = GraphicsHelper.getInstance();
+		
+		Dimension dimension = new Dimension(960,560);
+		JPanel mainFrame = new JPaintedPanel("img/background.png",dimension);
+		
+		mainFrame.setLayout(null);
+		setContentPane(mainFrame);
 		
 		Font  fonte = instance.getFont ();
 		Color color = instance.getColor();
@@ -60,19 +65,21 @@ public class MainScreen extends JFrame {
 		
 		Icon exitIcon = ResourceManager.getResizedIcon("icon/shutdown.png",20,20);
 		
-		setSize(960,560);
+		setSize(dimension);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);		// Tira a função do botão de fechar, pra usar apenas o dispose()
-		getContentPane().setLayout(null);
+		mainFrame.setLayout(null);
 		
 		JPanel painelParametros = new JPanel();
+		painelParametros.setOpaque(false);
 		painelParametros.setBorder(instance.getTitledBorder("Parâmetros"));
 		painelParametros.setBounds(12, 12, 936, 110);
-		getContentPane().add(painelParametros);
+		mainFrame.add(painelParametros);
 		painelParametros.setLayout(null);
 		
 		JPanel painelServico = new JPanel();
+		painelServico.setOpaque(false);
 		painelServico.setBorder(instance.getTitledBorder("Serviço"));
 		painelServico.setBounds(12, 25, 450, 70);
 		painelParametros.add(painelServico);
@@ -96,6 +103,7 @@ public class MainScreen extends JFrame {
 		painelServico.add(botaoServicoLimpa);
 		
 		JPanel painelUsuario = new JPanel();
+		painelUsuario.setOpaque(false);
 		painelUsuario.setLayout(null);
 		painelUsuario.setBorder(instance.getTitledBorder("Usuário"));
 		painelUsuario.setBounds(474, 25, 450, 70);
@@ -131,12 +139,13 @@ public class MainScreen extends JFrame {
 		botaoCredencialAdd.setToolTipText("Adiciona novas credenciais ao sistema");
 		botaoCredencialAdd.addActionListener((event) -> action_credential_new());
 		botaoCredencialAdd.setBounds(95, 129, 30, 25);
-		getContentPane().add(botaoCredencialAdd);
+		mainFrame.add(botaoCredencialAdd);
 		
 		JPanel painelListagem = new JPanel();
+		painelListagem.setOpaque(false);
 		painelListagem.setBorder(instance.getTitledBorder("Listagem            "));
 		painelListagem.setBounds(12, 134, 936, 350);
-		getContentPane().add(painelListagem);
+		mainFrame.add(painelListagem);
 		painelListagem.setLayout(null);
 		
 		modelo  = new LockedTableModel(colunas);
@@ -163,6 +172,8 @@ public class MainScreen extends JFrame {
 		columnModel.getColumn(4).setPreferredWidth(25);
 		
 		JScrollPane scrollPane = new JScrollPane(tableResultado);
+		scrollPane.setOpaque(false);
+		scrollPane.getViewport().setOpaque(false);
 		scrollPane.setBounds(12, 35, 912, 303);
 		painelListagem.add(scrollPane);
 		
@@ -170,13 +181,13 @@ public class MainScreen extends JFrame {
 		botaoSair.addActionListener((event) -> dispose());
 		botaoSair.setToolTipText("Sai do sistema");
 		botaoSair.setBounds(918, 498, 30, 25);
-		getContentPane().add(botaoSair);
+		mainFrame.add(botaoSair);
 		
 		labelInfo = new JLabel();
 		labelInfo.setFont(fonte);
 		labelInfo.setForeground(color);
 		labelInfo.setBounds(12, 496, 888, 25);
-		getContentPane().add(labelInfo);
+		mainFrame.add(labelInfo);
 		
 		action_fill_combo();
 		onCreateOptionsPopupMenu();

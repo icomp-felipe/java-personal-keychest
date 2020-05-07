@@ -41,6 +41,8 @@ public class CredentialsAdd extends JPanel {
 		Font  fonte = instance.getFont ();
 		Color color = instance.getColor();
 		
+		Icon viewIcon = ResourceManager.getResizedIcon("icon/eye.png",20,20);
+		
 		this.ownerList   = ownerList;
 		this.credentials = credentials;
 		
@@ -85,7 +87,8 @@ public class CredentialsAdd extends JPanel {
 		textSenha.setBounds(80, 90, 310, 25);
 		add(textSenha);
 		
-		JToggleButton mostraSenha = new JToggleButton();
+		JToggleButton mostraSenha = new JToggleButton(viewIcon);
+		mostraSenha.setToolTipText("Exibe ou oculta a senha");
 		mostraSenha.setBounds(405, 90, 25, 25);
 		mostraSenha.addActionListener((event) -> { if (mostraSenha.isSelected()) textSenha.setEchoChar((char)0); else textSenha.setEchoChar('*'); } );
 		add(mostraSenha);

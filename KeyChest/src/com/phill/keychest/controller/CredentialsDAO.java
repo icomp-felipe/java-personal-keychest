@@ -38,8 +38,6 @@ public class CredentialsDAO {
 			Connection c = Database.LOCAL.getConnection();
 			Statement st = c.createStatement();
 			
-			System.out.println(query);
-			
 			st.executeUpdate(query);
 			
 			st.close();

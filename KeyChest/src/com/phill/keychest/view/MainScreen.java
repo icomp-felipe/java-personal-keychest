@@ -56,7 +56,9 @@ public class MainScreen extends JFrame {
 		
 		Icon addIcon      = ResourceManager.getResizedIcon("icon/add.png",20,20);
 		Icon deleteIcon   = ResourceManager.getResizedIcon("icon/delete.png",20,20);
-		Icon updateIcon   = ResourceManager.getResizedIcon("icon/reload.png",20,20);
+		Icon updateIcon   = ResourceManager.getResizedIcon("icon/edit.png",20,20);
+		
+		Icon exitIcon = ResourceManager.getResizedIcon("icon/shutdown.png",20,20);
 		
 		setSize(960,560);
 		setLocationRelativeTo(null);
@@ -164,7 +166,7 @@ public class MainScreen extends JFrame {
 		scrollPane.setBounds(12, 35, 912, 303);
 		painelListagem.add(scrollPane);
 		
-		JButton botaoSair = new JButton();
+		JButton botaoSair = new JButton(exitIcon);
 		botaoSair.addActionListener((event) -> dispose());
 		botaoSair.setToolTipText("Sai do sistema");
 		botaoSair.setBounds(918, 498, 30, 25);
@@ -261,10 +263,10 @@ public class MainScreen extends JFrame {
 			else
 				AlertDialog.erro("Falha ao registrar usuário!\nProvavelmente o mesmo já existe!");
 			
+			// Por fim, atualizo o combo de usuários
+			action_fill_combo();
+			
 		}
-		
-		// Por fim, atualizo o combo de usuários
-		action_fill_combo();
 		
 	}
 	
@@ -297,11 +299,11 @@ public class MainScreen extends JFrame {
 				else
 					AlertDialog.erro("Falha ao atualizar usuário!\nTalvez você esteja escolhendo um nome que já existe no sistema.");
 			
+				// Por fim, atualizo o combo de usuários 
+				action_fill_combo();
+				
 			}
 		
-			// Por fim, atualizo o combo de usuários 
-			action_fill_combo();
-			
 		}
 		
 	}
@@ -329,10 +331,10 @@ public class MainScreen extends JFrame {
 			else
 				AlertDialog.erro("Falha ao remover usuário!\nTalvez ainda haja alguma credencial vinculada a ele no sistema.");
 			
+			// Por fim, atualizo o combo de usuários 
+			action_fill_combo();
+			
 		}
-		
-		// Por fim, atualizo o combo de usuários 
-		action_fill_combo();
 		
 	}
 	

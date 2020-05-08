@@ -6,8 +6,15 @@ import com.phill.libs.*;
 import com.phill.keychest.bd.*;
 import com.phill.keychest.model.*;
 
+/** Realiza a interface da classe "Credentials" entre o BD e a aplicação.
+ *  @author Felipe André - fass@icomp.ufam.edu.br
+ *  @version 1.0, 04/05/2020 */
 public class CredentialsDAO {
 	
+	/** Insere uma nova credencial no banco de dados.
+	 *  @param credentials - credencial
+	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
+	 *  Neste caso, o console deve ser consultado. */
 	public static boolean insert(final Credentials credentials) {
 		
 		try {
@@ -30,6 +37,10 @@ public class CredentialsDAO {
 		
 	}
 	
+	/** Atualiza dados de uma credencial no banco de dados.
+	 *  @param credentials - credencial
+	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
+	 *  Neste caso, o console deve ser consultado. */
 	public static boolean update(final Credentials credentials) {
 		
 		try {
@@ -52,6 +63,10 @@ public class CredentialsDAO {
 		
 	}
 	
+	/** Remove uma credencial do banco de dados.
+	 *  @param credentials - credencial
+	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
+	 *  Neste caso, o console deve ser consultado. */
 	public static boolean delete(final Credentials credentials) {
 		
 		try {
@@ -74,6 +89,10 @@ public class CredentialsDAO {
 		
 	}
 	
+	/** Lista credenciais de acordo com os filtros informados via parâmetro.
+	 *  @param service - nome do serviço
+	 *  @param owner - usuário do serviço
+	 *  @return {@link ArrayList} de credenciais que satisfazem a busca com os parâmetros informados. */
 	public static ArrayList<Credentials> list(final String service, final Owner owner) {
 		
 		ArrayList<Credentials> credentialsList = null;

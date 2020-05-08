@@ -6,8 +6,15 @@ import com.phill.libs.*;
 import com.phill.keychest.bd.*;
 import com.phill.keychest.model.*;
 
+/** Realiza a interface da classe "Owner" entre o BD e a aplicação.
+ *  @author Felipe André - fass@icomp.ufam.edu.br
+ *  @version 1.0, 04/05/2020 */
 public class OwnerDAO {
 	
+	/** Insere um nov usuário no banco de dados.
+	 *  @param name - nome de usuário
+	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
+	 *  Neste caso, o console deve ser consultado. */
 	public static boolean insert(final String name) {
 		
 		try {
@@ -33,6 +40,11 @@ public class OwnerDAO {
 		
 	}
 	
+	/** Atualiza dados de um usuário no banco de dados.
+	 *  @param owner - usuário selecionado
+	 *  @param name - novo nome de usuário
+	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
+	 *  Neste caso, o console deve ser consultado. */
 	public static boolean update(final Owner owner, final String name) {
 		
 		try {
@@ -58,6 +70,10 @@ public class OwnerDAO {
 		
 	}
 	
+	/** Remove um usuário do banco de dados (quando este não tem mais nenhuma credencial cadastrada).
+	 *  @param owner - usuário selecionado
+	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
+	 *  Neste caso, o console deve ser consultado. */
 	public static boolean delete(final Owner owner) {
 		
 		try {
@@ -83,6 +99,8 @@ public class OwnerDAO {
 		
 	}
 	
+	/** Lista todos os usuários cadastrados na base de dados.
+	 *  @return {@link ArrayList} de todos os usuários do BD. */
 	public static ArrayList<Owner> list() {
 		
 		ArrayList<Owner> ownerList = null;

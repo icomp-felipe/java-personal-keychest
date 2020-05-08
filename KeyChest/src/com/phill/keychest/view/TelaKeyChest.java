@@ -11,9 +11,9 @@ import com.phill.keychest.controller.*;
 import com.phill.libs.*;
 
 /** Tela principal do sistema de gerenciamento de credenciais.
- *  @author Felipe André
+ *  @author Felipe André - fass@icomp.ufam.edu.br
  *  @version 1.0, 04/05/2020 */
-public class MainScreen extends JFrame {
+public class TelaKeyChest extends JFrame {
 	
 	// Serial da JFrame
 	private static final long serialVersionUID = 1L;
@@ -34,19 +34,13 @@ public class MainScreen extends JFrame {
 	private ArrayList<Owner> ownerList;
 	private ArrayList<Credentials> credentialsList;
 
-	/** Método de teste (main) */
-	public static void main(String[] args) throws SQLException {
-		
-		new MainScreen();
-		
-	}
-
 	/** Constrói a interface gráfica e inicializa as variáveis de controle */
-	public MainScreen() {
+	public TelaKeyChest() {
 		super("KeyChest - build 20200504");
 		
 		// Inicializando atributos gráficos
-		GraphicsHelper instance = GraphicsHelper.getInstance();
+		GraphicsHelper helper = GraphicsHelper.getInstance();
+		GraphicsHelper.setFrameIcon(this,"img/logo.png");
 		
 		Dimension dimension = new Dimension(960,560);
 		JPanel mainFrame = new JPaintedPanel("img/background.png",dimension);
@@ -54,16 +48,16 @@ public class MainScreen extends JFrame {
 		mainFrame.setLayout(null);
 		setContentPane(mainFrame);
 		
-		Font  fonte = instance.getFont ();
-		Color color = instance.getColor();
+		// Recuperando fontes e cores
+		Font  fonte = helper.getFont ();
+		Color color = helper.getColor();
 		
-		Icon clearIcon    = ResourceManager.getResizedIcon("icon/clear.png",20,20);
-		
-		Icon addIcon      = ResourceManager.getResizedIcon("icon/add.png",20,20);
-		Icon deleteIcon   = ResourceManager.getResizedIcon("icon/delete.png",20,20);
-		Icon updateIcon   = ResourceManager.getResizedIcon("icon/edit.png",20,20);
-		
-		Icon exitIcon = ResourceManager.getResizedIcon("icon/shutdown.png",20,20);
+		// Recuperando ícones
+		Icon clearIcon  = ResourceManager.getResizedIcon("icon/clear.png",20,20);
+		Icon addIcon    = ResourceManager.getResizedIcon("icon/add.png",20,20);
+		Icon deleteIcon = ResourceManager.getResizedIcon("icon/delete.png",20,20);
+		Icon updateIcon = ResourceManager.getResizedIcon("icon/edit.png",20,20);
+		Icon exitIcon   = ResourceManager.getResizedIcon("icon/shutdown.png",20,20);
 		
 		setSize(dimension);
 		setLocationRelativeTo(null);
@@ -73,14 +67,14 @@ public class MainScreen extends JFrame {
 		
 		JPanel painelParametros = new JPanel();
 		painelParametros.setOpaque(false);
-		painelParametros.setBorder(instance.getTitledBorder("Parâmetros"));
+		painelParametros.setBorder(helper.getTitledBorder("Parâmetros"));
 		painelParametros.setBounds(12, 12, 936, 110);
 		mainFrame.add(painelParametros);
 		painelParametros.setLayout(null);
 		
 		JPanel painelServico = new JPanel();
 		painelServico.setOpaque(false);
-		painelServico.setBorder(instance.getTitledBorder("Serviço"));
+		painelServico.setBorder(helper.getTitledBorder("Serviço"));
 		painelServico.setBounds(12, 25, 450, 70);
 		painelParametros.add(painelServico);
 		painelServico.setLayout(null);
@@ -105,7 +99,7 @@ public class MainScreen extends JFrame {
 		JPanel painelUsuario = new JPanel();
 		painelUsuario.setOpaque(false);
 		painelUsuario.setLayout(null);
-		painelUsuario.setBorder(instance.getTitledBorder("Usuário"));
+		painelUsuario.setBorder(helper.getTitledBorder("Usuário"));
 		painelUsuario.setBounds(474, 25, 450, 70);
 		painelParametros.add(painelUsuario);
 		
@@ -143,7 +137,7 @@ public class MainScreen extends JFrame {
 		
 		JPanel painelListagem = new JPanel();
 		painelListagem.setOpaque(false);
-		painelListagem.setBorder(instance.getTitledBorder("Listagem            "));
+		painelListagem.setBorder(helper.getTitledBorder("Listagem            "));
 		painelListagem.setBounds(12, 134, 936, 350);
 		mainFrame.add(painelListagem);
 		painelListagem.setLayout(null);
@@ -520,8 +514,8 @@ public class MainScreen extends JFrame {
 		
 	}
 	
-	@Override
 	/** Desconecta a aplicação do banco de dados e encerra o programa */
+	@Override
 	public void dispose() {
 		
 		try { Database.LOCAL.disconnect(); }

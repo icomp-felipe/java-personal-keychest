@@ -1,10 +1,16 @@
 package com.phill.keychest.bd;
 
+import java.io.*;
 import java.sql.*;
+import com.phill.libs.*;
 import com.mchange.v2.c3p0.*;
 
+/** Implementa os métodos de acesso ao banco de dados.
+ *  @author Felipe André - fass@icomp.ufam.edu.br
+ *  @version 1.0, 04/05/2020 */
 public enum Database {
 	
+	// Por enquanto só temos localhost
 	LOCAL("localhost");
 	
 	private final String serverURL;
@@ -25,8 +31,12 @@ public enum Database {
 	/** Método que deve ser OBRIGATORIAMENTE utilizado na primeira conexão ao banco de dados,
 	 *  pois define em qual banco o sistema irá se conectar (local ou, futuramente, remoto).
 	 *  No mais mais funciona como um singleton, durante a primeira execução, cria a conexão
-	 *  ao banco e nas próximas o método é ignorado.  */
-	public boolean connect(final String user, final String pass) throws SQLException {
+	 *  ao banco e nas próximas o método é ignorado.
+	 *  @param user - usuário do banco de dados
+	 *  @param pass - senha de usuário do banco de dados
+	 *  @throws SQLException quando a conexão não foi realizada, tanto por usuário/senha.
+	 *  inválidos quando falhas de conexão. */
+	public void connect(final String user, final String pass) throws SQLException {
 		
 		// Na primeira execução deste método crio a conexão
 		if (dataSource == null) {
@@ -44,7 +54,7 @@ public enum Database {
 				
 				dataSource.setDebugUnreturnedConnectionStackTraces(true);
 				dataSource.setUnreturnedConnectionTimeout(11);
-				dataSource.setCheckoutTimeout(10000);
+				dataSource.setCheckoutTimeout(3000);
 				
 				dataSource.setMaxIdleTime(30);
 				dataSource.setAcquireIncrement(5);
@@ -53,23 +63,50 @@ public enum Database {
 				dataSource.setMaxPoolSize(5);
 				dataSource.setMaxStatements(10);
 				
+				// Este método realmente realiza a primeira conexão com o BD
+				test();
+				
 			}
+			
+			// Se "test()" falhar, uma exceção é gerada
 			catch (Exception exception) {
 				
-				dataSource.close();
-				DataSources.destroy(dataSource);
+				if (dataSource != null) {
+					
+					dataSource.close();
+					DataSources.destroy(dataSource);
+					this.dataSource = null;
+					
+				}
 				
-				this.dataSource = null;
 				throw new SQLException(exception);
 				
 			}
 			
 		}
 		
-		return true;
 	}
 	
-	/** Desconecta a aplicação do banco de dados */
+	/** Testa a conexão ao BD.
+	 * @throws IOException quando o arquivo .sql não é encontrado.
+	 * @throws SQLException quando houve falha de conexão. */
+	public void test() throws SQLException, IOException {
+		
+		String query = ResourceManager.getSQLString("test-query.sql",0);
+		Connection c = Database.LOCAL.getConnection();
+		Statement st = c.createStatement();
+		ResultSet rs = st.executeQuery(query);
+		
+		if (rs.next())
+			rs.getInt("owners");
+		
+		st.close();
+		c .close();
+		
+	}
+	
+	/** Desconecta a aplicação do banco de dados.
+	 * @throws SQLException quando a conexão foi perdida por algum motivo. */
 	public void disconnect() throws SQLException {
 		
 		if (dataSource != null) {
@@ -83,7 +120,9 @@ public enum Database {
 		
 	}
 	
-	/** Recupera uma conexão livre do Pool de Conexões */
+	/** Recupera uma conexão livre do Pool de Conexões.
+	 *  @throws SQLException quando não há conexões livres ou a conexão com o BD foi perdida.
+	 *  @return Conexão disponível para utilização. */
 	public Connection getConnection() throws SQLException {
 		
 		Connection connection = null;

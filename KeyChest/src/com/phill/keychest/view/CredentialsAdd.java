@@ -8,44 +8,50 @@ import com.phill.keychest.model.*;
 import com.phill.keychest.controller.*;
 import com.phill.libs.*;
 
+/** Implementa a tela de cadastro e edição de credenciais.
+ *  @author Felipe André - fass@icomp.ufam.edu.br
+ *  @version 1.0, 05/05/2020 */
 public class CredentialsAdd extends JPanel {
 
+	// Serial da JFrame
 	private static final long serialVersionUID = 1L;
+	
+	// Atributos gráficos
 	private final JTextField textServico, textLogin;
 	private final JPasswordField textSenha;
 	private final JComboBox<String> comboUsuarios;
 	
+	// Atributos dinâmicos
 	private final ArrayList<Owner> ownerList;
 	private final Credentials credentials;
 	
-	public static void main(String[] args) {
-		
-		JFrame frame = new JFrame();
-		
-		frame.setContentPane(new CredentialsAdd(new ArrayList<Owner>()));
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setBounds(100, 100, 450, 200);
-		
-		frame.setVisible(true);
-		
-	}
-	
+	/** Construtor utilizado para a criação de uma nova credencial.
+	 *  Este construtor chama o principal com uma credencial nula, indicando que é um cadastro.
+	 *  @param ownerList - lista de usuários cadastrados */
 	public CredentialsAdd(final ArrayList<Owner> ownerList) {
 		this(ownerList,null);
 	}
 	
+	/** Construtor utilizado para a edição de uma credencial já existente.
+	 *  Também é o construtor principal desta classe.
+	 *  @param ownerList - lista de usuários cadastrados
+	 *  @param credentials - credencial a ser editada. Quando nula, significa que é um cadastro! */
 	public CredentialsAdd(final ArrayList<Owner> ownerList, Credentials credentials) {
 		
+		// Alimentando atributos locais
+		this.ownerList   = ownerList;
+		this.credentials = credentials;
+		
+		// Recuperando fontes e cores
 		GraphicsHelper instance = GraphicsHelper.getInstance();
 		
 		Font  fonte = instance.getFont ();
 		Color color = instance.getColor();
 		
+		// Recuperando ícones
 		Icon viewIcon = ResourceManager.getResizedIcon("icon/eye.png",20,20);
 		
-		this.ownerList   = ownerList;
-		this.credentials = credentials;
-		
+		// Inicializando atributos gráficos
 		setPreferredSize(new Dimension(450,165));
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		setLayout(null);
@@ -105,16 +111,19 @@ public class CredentialsAdd extends JPanel {
 		comboUsuarios.setBounds(80, 130, 350, 25);
 		add(comboUsuarios);
 		
+		// Preenchendo o combo com usuários
 		comboUsuarios.addItem("Selecione abaixo");
 		
 		for (Owner owner: ownerList)
 			comboUsuarios.addItem(owner.getName());
 		
+		// Se estou no modo edição, carrego os dados da credencial na tela
 		if (credentials != null)
 			load();
 		
 	}
 	
+	/** Carrega os dados da credencial informada na tela. */
 	private void load() {
 		
 		textServico.setText(this.credentials.getService ());
@@ -125,13 +134,17 @@ public class CredentialsAdd extends JPanel {
 		
 	}
 	
+	/** Salva as alterações de credencial no banco de dados. De acordo com
+	 *  o modo, este método sabe decidir se deve inserir ou atualizar. */
 	public void commit() {
 		
+		// Recuperando dados da tela
 		final String service = textServico.getText().trim();
 		final String login   = textLogin  .getText().trim();
 		final String passwd  = new String(textSenha.getPassword());
 		final Owner  owner   = comboUsuarios.getSelectedIndex() > 0 ? ownerList.get(comboUsuarios.getSelectedIndex()-1) : null;
 		
+		// Validação de nome de serviço: este não pode ser vazio
 		if (service.isEmpty()) {
 			
 			AlertDialog.erro("O nome de serviço não foi especificado");
@@ -139,6 +152,7 @@ public class CredentialsAdd extends JPanel {
 			
 		}
 		
+		// Validação de usuário: algum deve ser selecionado
 		if (owner == null) {
 			
 			AlertDialog.erro("Nenhum usuário foi selecionado");
@@ -146,6 +160,7 @@ public class CredentialsAdd extends JPanel {
 			
 		}
 		
+		// Montando objeto de credencial
 		Credentials credentials = new Credentials();
 		
 		if (this.credentials != null)
@@ -156,8 +171,10 @@ public class CredentialsAdd extends JPanel {
 		credentials.setPassword(passwd );
 		credentials.setOwner   (owner  );
 		
+		// Salvando alterações no banco de dados
 		boolean status = (this.credentials == null) ? CredentialsDAO.insert(credentials) : CredentialsDAO.update(credentials);
 		
+		// Imprimindo mensagem de status
 		if (status)
 			if (this.credentials == null)
 				AlertDialog.informativo("Credencial cadastrada com sucesso!");
@@ -171,4 +188,19 @@ public class CredentialsAdd extends JPanel {
 		
 	}
 
+	/** Método apenas para fins de teste. Não possui ligação alguma com o BD. */
+	public static void main(String[] args) {
+		
+		JFrame frame = new JFrame();
+		
+		frame.setContentPane(new CredentialsAdd(new ArrayList<Owner>()));
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setBounds(100, 100, 450, 200);
+		frame.setLocationRelativeTo(null);
+		frame.setTitle("KeyChest - Test Zone");
+		
+		frame.setVisible(true);
+		
+	}
+	
 }

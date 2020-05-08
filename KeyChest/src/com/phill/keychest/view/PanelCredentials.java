@@ -35,7 +35,8 @@ public class PanelCredentials extends JPanel {
 	/** Construtor utilizado para a edição de uma credencial já existente.
 	 *  Também é o construtor principal desta classe.
 	 *  @param ownerList - lista de usuários cadastrados
-	 *  @param credentials - credencial a ser editada. Quando nula, significa que é um cadastro! */
+	 *  @param credentials - credencial a ser editada. Quando nula, significa que é um cadastro! 
+	 *  @wbp.parser.constructor */
 	public PanelCredentials(final ArrayList<Owner> ownerList, Credentials credentials) {
 		
 		// Alimentando atributos locais

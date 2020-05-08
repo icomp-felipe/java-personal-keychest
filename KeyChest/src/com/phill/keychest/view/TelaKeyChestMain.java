@@ -356,8 +356,12 @@ public class TelaKeyChestMain extends JFrame {
 	/** Exibe a tela de criação de uma nova credencial */
 	private void action_credential_new() {
 		
+		// Por conveniência, se um usuário foi selecionado no combo, o seleciono na próxima tela
+		final Owner owner = comboUsuarios.getSelectedIndex() > 0 ? ownerList.get(comboUsuarios.getSelectedIndex()-1) : null;
+		
 		// Construindo a janela...
 		PanelCredentials screen = new PanelCredentials(ownerList);
+		screen.setOwner(owner);
 		
 		int option = JOptionPane.showConfirmDialog(this,
 				screen,

@@ -187,6 +187,15 @@ public class PanelCredentials extends JPanel {
 				AlertDialog.erro("Falha ao atualizar credencial.\nTalvez este serviço já tenha sido cadastrado para o usuário selecionado.");
 		
 	}
+	
+	/** Seta um dado usuário no combo.
+	 *  @param owner - usuário */
+	public void setOwner(final Owner owner) {
+		
+		if (owner != null)
+			comboUsuarios.setSelectedItem(owner.getName());
+		
+	}
 
 	/** Método apenas para fins de teste. Não possui ligação alguma com o BD. */
 	public static void main(String[] args) {

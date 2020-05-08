@@ -165,7 +165,7 @@ public class TelaKeyChestLogin extends JFrame {
 				// Estabelece a conexão ao banco de acordo com a seleção na área de opções
 				Database.LOCAL.connect(login,senha);
 				
-				new TelaKeyChest();
+				new TelaKeyChestMain();
 				dispose();
 				
 			}

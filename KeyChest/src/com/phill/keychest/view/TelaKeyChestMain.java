@@ -12,8 +12,8 @@ import com.phill.libs.*;
 
 /** Tela principal do sistema de gerenciamento de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.0, 04/05/2020 */
-public class TelaKeyChest extends JFrame {
+ *  @version 1.1, 08/05/2020 */
+public class TelaKeyChestMain extends JFrame {
 	
 	// Serial da JFrame
 	private static final long serialVersionUID = 1L;
@@ -22,7 +22,7 @@ public class TelaKeyChest extends JFrame {
 	private final JTextField textServico;
 	private final JButton botaoUsuarioAtualiza, botaoUsuarioDeleta;
 	private final JComboBox<String> comboUsuarios;
-	private final JLabel labelInfo;
+	private final JLabel labelInfo, labelQTD;
 	
 	// Atributos gráficos (Tabela)
 	private final JTable tableResultado;
@@ -35,8 +35,8 @@ public class TelaKeyChest extends JFrame {
 	private ArrayList<Credentials> credentialsList;
 
 	/** Constrói a interface gráfica e inicializa as variáveis de controle */
-	public TelaKeyChest() {
-		super("KeyChest - build 20200504");
+	public TelaKeyChestMain() {
+		super("KeyChest - build 20200508");
 		
 		// Inicializando atributos gráficos
 		GraphicsHelper helper = GraphicsHelper.getInstance();
@@ -139,8 +139,8 @@ public class TelaKeyChest extends JFrame {
 		painelListagem.setOpaque(false);
 		painelListagem.setBorder(helper.getTitledBorder("Listagem            "));
 		painelListagem.setBounds(12, 134, 936, 350);
-		mainFrame.add(painelListagem);
 		painelListagem.setLayout(null);
+		mainFrame.add(painelListagem);
 		
 		modelo  = new LockedTableModel(colunas);
 		
@@ -165,11 +165,17 @@ public class TelaKeyChest extends JFrame {
 		columnModel.getColumn(3).setPreferredWidth(95);
 		columnModel.getColumn(4).setPreferredWidth(25);
 		
-		JScrollPane scrollPane = new JScrollPane(tableResultado);
-		scrollPane.setOpaque(false);
-		scrollPane.getViewport().setOpaque(false);
-		scrollPane.setBounds(12, 35, 912, 303);
-		painelListagem.add(scrollPane);
+		JScrollPane scrollListagem = new JScrollPane(tableResultado);
+		scrollListagem.setOpaque(false);
+		scrollListagem.getViewport().setOpaque(false);
+		scrollListagem.setBounds(12, 35, 912, 280);
+		painelListagem.add(scrollListagem);
+		
+		labelQTD = new JLabel();
+		labelQTD.setFont(fonte);
+		labelQTD.setForeground(color);
+		labelQTD.setBounds(12, 320, 912, 20);
+		painelListagem.add(labelQTD);
 		
 		JButton botaoSair = new JButton(exitIcon);
 		botaoSair.addActionListener((event) -> dispose());
@@ -231,7 +237,7 @@ public class TelaKeyChest extends JFrame {
 	}
 	
 	/** Realiza as buscas de credenciais do sistema de acordo com os parâmetros de entrada (serviço e usuário). */
-	private void listener_query() {
+	private synchronized void listener_query() {
 		
 		// Recuperando o serviço e o usuário da tela
 		final String service = textServico.getText();
@@ -245,6 +251,8 @@ public class TelaKeyChest extends JFrame {
 		
 		for (Credentials credentials: this.credentialsList)
 			TableUtils.add(modelo,credentials);
+		
+		util_update_size();
 		
 	}
 	
@@ -349,7 +357,7 @@ public class TelaKeyChest extends JFrame {
 	private void action_credential_new() {
 		
 		// Construindo a janela...
-		CredentialsAdd screen = new CredentialsAdd(ownerList);
+		PanelCredentials screen = new PanelCredentials(ownerList);
 		
 		int option = JOptionPane.showConfirmDialog(this,
 				screen,
@@ -380,7 +388,7 @@ public class TelaKeyChest extends JFrame {
 		if (selected != null) {
 			
 			// Construo a tela de edição...
-			CredentialsAdd screen = new CredentialsAdd(ownerList,selected);
+			PanelCredentials screen = new PanelCredentials(ownerList,selected);
 			
 			int option = JOptionPane.showConfirmDialog(this,
 					screen,
@@ -521,6 +529,18 @@ public class TelaKeyChest extends JFrame {
 		try { Database.LOCAL.disconnect(); }
 		catch (SQLException exception) { exception.printStackTrace(); }
 		finally { super.dispose(); }
+		
+	}
+	
+	/** Atualiza a quantidade de credenciais encontradas no fim da tabela. */
+	private void util_update_size() {
+		
+		final int size = this.credentialsList.size();
+		
+		if (size == 1)
+			labelQTD.setText("1 credencial encontrada");
+		else
+			labelQTD.setText(size + " credenciais encontradas");
 		
 	}
 	

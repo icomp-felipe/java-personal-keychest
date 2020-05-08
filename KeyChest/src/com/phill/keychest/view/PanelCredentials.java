@@ -11,7 +11,7 @@ import com.phill.libs.*;
 /** Implementa a tela de cadastro e edição de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
  *  @version 1.0, 05/05/2020 */
-public class CredentialsAdd extends JPanel {
+public class PanelCredentials extends JPanel {
 
 	// Serial da JFrame
 	private static final long serialVersionUID = 1L;
@@ -28,7 +28,7 @@ public class CredentialsAdd extends JPanel {
 	/** Construtor utilizado para a criação de uma nova credencial.
 	 *  Este construtor chama o principal com uma credencial nula, indicando que é um cadastro.
 	 *  @param ownerList - lista de usuários cadastrados */
-	public CredentialsAdd(final ArrayList<Owner> ownerList) {
+	public PanelCredentials(final ArrayList<Owner> ownerList) {
 		this(ownerList,null);
 	}
 	
@@ -36,7 +36,7 @@ public class CredentialsAdd extends JPanel {
 	 *  Também é o construtor principal desta classe.
 	 *  @param ownerList - lista de usuários cadastrados
 	 *  @param credentials - credencial a ser editada. Quando nula, significa que é um cadastro! */
-	public CredentialsAdd(final ArrayList<Owner> ownerList, Credentials credentials) {
+	public PanelCredentials(final ArrayList<Owner> ownerList, Credentials credentials) {
 		
 		// Alimentando atributos locais
 		this.ownerList   = ownerList;
@@ -193,7 +193,7 @@ public class CredentialsAdd extends JPanel {
 		
 		JFrame frame = new JFrame();
 		
-		frame.setContentPane(new CredentialsAdd(new ArrayList<Owner>()));
+		frame.setContentPane(new PanelCredentials(new ArrayList<Owner>()));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBounds(100, 100, 450, 200);
 		frame.setLocationRelativeTo(null);

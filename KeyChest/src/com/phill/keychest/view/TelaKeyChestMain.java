@@ -35,8 +35,8 @@ public class TelaKeyChestMain extends JFrame {
 	private ArrayList<Credentials> credentialsList;
 
 	/** Constrói a interface gráfica e inicializa as variáveis de controle */
-	public TelaKeyChestMain() {
-		super("KeyChest - build 20200508");
+	public TelaKeyChestMain(final String serverURL) {
+		super("KeyChest - build 20200508 [" + serverURL + "]");
 		
 		// Inicializando atributos gráficos
 		GraphicsHelper helper = GraphicsHelper.getInstance();
@@ -530,7 +530,7 @@ public class TelaKeyChestMain extends JFrame {
 	@Override
 	public void dispose() {
 		
-		try { Database.LOCAL.disconnect(); }
+		try { Database.INSTANCE.disconnect(); }
 		catch (SQLException exception) { exception.printStackTrace(); }
 		finally { super.dispose(); }
 		

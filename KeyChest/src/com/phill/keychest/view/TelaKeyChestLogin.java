@@ -15,9 +15,9 @@ public class TelaKeyChestLogin extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	
-	private final JTextField textLogin;
+	private final JTextField textLogin, textEndereco;
 	private final JPasswordField textSenha;
-	private final JRadioButton radioProducao;
+	private final JRadioButton radioLocal;
 	private final JLabel labelConexaoStatus;
 	private final ImageIcon loading = new ImageIcon(ResourceManager.getResource("img/loading.gif"));
 	
@@ -57,7 +57,7 @@ public class TelaKeyChestLogin extends JFrame {
 		JPanel painelCredenciais = new JPanel();
 		painelCredenciais.setOpaque(false);
 		painelCredenciais.setBorder(helper.getTitledBorder("Credenciais"));
-		painelCredenciais.setBounds(250, 25, 285, 110);
+		painelCredenciais.setBounds(250, 10, 285, 110);
 		painelCredenciais.setLayout(null);
 		mainPanel.add(painelCredenciais);
 		
@@ -90,30 +90,47 @@ public class TelaKeyChestLogin extends JFrame {
 		JPanel painelOpcoes = new JPanel();
 		painelOpcoes.setOpaque(false);
 		painelOpcoes.setBorder(helper.getTitledBorder("Opções"));
-		painelOpcoes.setBounds(250, 145, 285, 60);
+		painelOpcoes.setBounds(250, 120, 285, 100);
 		painelOpcoes.setLayout(null);
 		mainPanel.add(painelOpcoes);
 		
 		JLabel labelConexao = new JLabel("Conexão:");
-		labelConexao.setBounds(12, 30, 66, 15);
+		labelConexao.setHorizontalAlignment(JLabel.RIGHT);
+		labelConexao.setFont(dialog);
+		labelConexao.setBounds(12, 30, 75, 20);
 		painelOpcoes.add(labelConexao);
 		
-		radioProducao = new JRadioButton("Produção");
-		radioProducao.setOpaque(false);
-		radioProducao.setSelected(true);
-		radioProducao.setFont(radios);
-		radioProducao.setBounds(90, 25, 102, 23);
-		painelOpcoes.add(radioProducao);
-		
-		JRadioButton radioLocal = new JRadioButton("Local");
+		radioLocal = new JRadioButton("Local");
+		radioLocal.addActionListener((event) -> control_text_address());
 		radioLocal.setOpaque(false);
+		radioLocal.setSelected(true);
 		radioLocal.setFont(radios);
-		radioLocal.setBounds(190, 25, 70, 23);
+		radioLocal.setBounds(105, 30, 70, 20);
 		painelOpcoes.add(radioLocal);
 		
+		JRadioButton radioRemota = new JRadioButton("Remota");
+		radioRemota.addActionListener((event) -> control_text_address());
+		radioRemota.setOpaque(false);
+		radioRemota.setFont(radios);
+		radioRemota.setBounds(175, 30, 100, 20);
+		painelOpcoes.add(radioRemota);
+		
 		ButtonGroup group = new ButtonGroup();
+		group.add(radioRemota);
 		group.add(radioLocal);
-		group.add(radioProducao);
+		
+		JLabel labelEndereco = new JLabel("Endereço:");
+		labelEndereco.setHorizontalAlignment(JLabel.RIGHT);
+		labelEndereco.setFont(dialog);
+		labelEndereco.setBounds(12, 60, 75, 20);
+		painelOpcoes.add(labelEndereco);
+		
+		textEndereco = new JTextField("localhost");
+		textEndereco.setEditable(false);
+		textEndereco.setFont(dialog);
+		textEndereco.setForeground(color);
+		textEndereco.setBounds(95, 60, 180, 25);
+		painelOpcoes.add(textEndereco);
 		
 		JButton botaoSair = new JButton("Sair");
 		botaoSair.addActionListener((event) -> dispose());
@@ -131,7 +148,8 @@ public class TelaKeyChestLogin extends JFrame {
 		mainPanel.add(botaoEntrar);
 		
 		KeyListener listener = (KeyboardAdapter) (event) -> { if (event.getKeyCode() == KeyEvent.VK_ENTER) botaoEntrar.doClick(); };
-		textSenha.addKeyListener(listener);
+		textSenha   .addKeyListener(listener);
+		textEndereco.addKeyListener(listener);
 		
 		labelConexaoStatus = new JLabel();
 		labelConexaoStatus.setHorizontalAlignment(JLabel.LEFT);
@@ -148,14 +166,37 @@ public class TelaKeyChestLogin extends JFrame {
 		
 	}
 	
+	/** Controla o comportamento do input de endereços */
+	private void control_text_address() {
+
+		if (radioLocal.isSelected())
+			textEndereco.setText("localhost");
+		else {
+			textEndereco.setText(null);
+			textEndereco.requestFocus();
+		}
+		
+		textEndereco.setEditable(!radioLocal.isSelected());
+		
+	}
+
 	/** Implementa a tentativa de login no sistema */
 	private void tryLogin() {
 		
 		new Thread(() -> {
 		
 			// Recuperando login e senha da view
-			final String login = textLogin.getText();
-			final String senha = new String(textSenha.getPassword());
+			final String login  = textLogin.getText();
+			final String senha  = new String(textSenha.getPassword());
+			final String server = textEndereco.getText().trim();
+			
+			// Tratamento de endereço de servidor
+			if (server.isEmpty()) {
+				
+				AlertDialog.erro("Informe o endereço do servidor!");
+				return;
+				
+			}
 			
 			label(false);
 		
@@ -163,9 +204,9 @@ public class TelaKeyChestLogin extends JFrame {
 			try {
 				
 				// Estabelece a conexão ao banco de acordo com a seleção na área de opções
-				Database.LOCAL.connect(login,senha);
+				Database.INSTANCE.connect(server,login,senha);
 				
-				new TelaKeyChestMain();
+				new TelaKeyChestMain(server);
 				dispose();
 				
 			}
@@ -205,5 +246,4 @@ public class TelaKeyChestLogin extends JFrame {
 		textLogin.setText(null);
 		textSenha.setText(null);
 	}
-	
 }

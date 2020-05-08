@@ -20,7 +20,7 @@ public class OwnerDAO {
 		try {
 			
 			String query = ResourceManager.getSQLString("owner-insert.sql",name);
-			Connection c = Database.LOCAL.getConnection();
+			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			
 			st.executeUpdate(query);
@@ -50,7 +50,7 @@ public class OwnerDAO {
 		try {
 			
 			String query = ResourceManager.getSQLString("owner-update.sql",name,owner.getID());
-			Connection c = Database.LOCAL.getConnection();
+			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			
 			st.executeUpdate(query);
@@ -79,7 +79,7 @@ public class OwnerDAO {
 		try {
 			
 			String query = ResourceManager.getSQLString("owner-delete.sql",owner.getID());
-			Connection c = Database.LOCAL.getConnection();
+			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			
 			st.executeUpdate(query);
@@ -110,7 +110,7 @@ public class OwnerDAO {
 			ownerList = new ArrayList<Owner>();
 			
 			String query = ResourceManager.getSQLString("owner-select.sql",0);
-			Connection c = Database.LOCAL.getConnection();
+			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			ResultSet rs = st.executeQuery(query);
 			

@@ -7,20 +7,15 @@ import com.mchange.v2.c3p0.*;
 
 /** Implementa os métodos de acesso ao banco de dados.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.0, 04/05/2020 */
+ *  @version 1.1, 08/05/2020 */
 public enum Database {
 	
-	// Por enquanto só temos localhost
-	LOCAL("localhost");
+	INSTANCE;
 	
-	private final String serverURL;
 	private ComboPooledDataSource dataSource;
 	private final String driverClass = "org.mariadb.jdbc.Driver" ;
 	
-	Database(final String serverURL) {
-		
-		// Recupera a URL do Banco de Dados
-		this.serverURL = serverURL;
+	Database() {
 		
 		// Desativando os logs do sistema
 		System.setProperty("com.mchange.v2.log.MLog", "com.mchange.v2.log.FallbackMLog");
@@ -36,12 +31,12 @@ public enum Database {
 	 *  @param pass - senha de usuário do banco de dados
 	 *  @throws SQLException quando a conexão não foi realizada, tanto por usuário/senha.
 	 *  inválidos quando falhas de conexão. */
-	public void connect(final String user, final String pass) throws SQLException {
+	public void connect(final String serverURL, final String user, final String pass) throws SQLException {
 		
 		// Na primeira execução deste método crio a conexão
 		if (dataSource == null) {
 			
-			final String databaseURL = "jdbc:mysql://" + this.serverURL + "/keychest";
+			final String databaseURL = "jdbc:mysql://" + serverURL + "/keychest";
 			
 			dataSource = new ComboPooledDataSource();
 			
@@ -93,7 +88,7 @@ public enum Database {
 	public void test() throws SQLException, IOException {
 		
 		String query = ResourceManager.getSQLString("test-query.sql",0);
-		Connection c = Database.LOCAL.getConnection();
+		Connection c = Database.INSTANCE.getConnection();
 		Statement st = c.createStatement();
 		ResultSet rs = st.executeQuery(query);
 		

@@ -10,7 +10,7 @@ import com.phill.libs.*;
 
 /** Implementa a tela de cadastro e edição de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.0, 05/05/2020 */
+ *  @version 1.1, 10/05/2020 */
 public class PanelCredentials extends JPanel {
 
 	// Serial da JFrame

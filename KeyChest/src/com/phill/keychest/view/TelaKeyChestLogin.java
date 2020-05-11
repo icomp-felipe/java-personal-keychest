@@ -101,6 +101,7 @@ public class TelaKeyChestLogin extends JFrame {
 		painelOpcoes.add(labelConexao);
 		
 		radioLocal = new JRadioButton("Local");
+		radioLocal.setToolTipText("Selecionar conexão local");
 		radioLocal.addActionListener((event) -> control_text_address());
 		radioLocal.setOpaque(false);
 		radioLocal.setSelected(true);
@@ -110,6 +111,7 @@ public class TelaKeyChestLogin extends JFrame {
 		
 		JRadioButton radioRemota = new JRadioButton("Remota");
 		radioRemota.addActionListener((event) -> control_text_address());
+		radioRemota.setToolTipText("Selecionar conexão remota");
 		radioRemota.setOpaque(false);
 		radioRemota.setFont(radios);
 		radioRemota.setBounds(175, 30, 100, 20);
@@ -126,6 +128,7 @@ public class TelaKeyChestLogin extends JFrame {
 		painelOpcoes.add(labelEndereco);
 		
 		textEndereco = new JTextField("localhost");
+		textEndereco.setToolTipText("Digite aqui o endereço de IP ou domínio do servidor");
 		textEndereco.setEditable(false);
 		textEndereco.setFont(dialog);
 		textEndereco.setForeground(color);

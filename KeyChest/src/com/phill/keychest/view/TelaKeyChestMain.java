@@ -12,7 +12,7 @@ import com.phill.libs.*;
 
 /** Tela principal do sistema de gerenciamento de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.1, 08/05/2020 */
+ *  @version 1.2, 10/05/2020 */
 public class TelaKeyChestMain extends JFrame {
 	
 	// Serial da JFrame
@@ -88,10 +88,7 @@ public class TelaKeyChestMain extends JFrame {
 		textServico.setColumns(10);
 		
 		JButton botaoServicoLimpa = new JButton(clearIcon);
-		botaoServicoLimpa.addActionListener((event) -> {
-			textServico.setText(null);
-			textServico.requestFocus();
-		});
+		botaoServicoLimpa.addActionListener((event) -> action_clear());
 		botaoServicoLimpa.setToolTipText("Limpa este campo de busca");
 		botaoServicoLimpa.setBounds(408, 29, 30, 25);
 		painelServico.add(botaoServicoLimpa);
@@ -258,6 +255,16 @@ public class TelaKeyChestMain extends JFrame {
 	
 	/********************** Tratamento de Eventos de Usuários *****************************/
 	
+	/** Limpa o campo de busca de serviço e atualiza a tabela */
+	private void action_clear() {
+		
+		textServico.setText(null);
+		textServico.requestFocus();
+		
+		listener_query();
+		
+	}
+	
 	/** Exibe a tela de criação de um novo usuário */
 	private void action_create_user() {
 		
@@ -276,8 +283,9 @@ public class TelaKeyChestMain extends JFrame {
 			else
 				AlertDialog.erro("Falha ao registrar usuário!\nProvavelmente o mesmo já existe!");
 			
-			// Por fim, atualizo o combo de usuários
+			// Por fim, atualizo o combo de usuários e seleciono o novo usuário criado
 			action_fill_combo();
+			comboUsuarios.setSelectedItem(user);
 			
 		}
 		

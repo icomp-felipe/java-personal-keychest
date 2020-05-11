@@ -12,6 +12,13 @@ CREATE TABLE `owner` (
   UNIQUE KEY `owner_name` (`owner_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `config` (
+  `cfg_owner_id` int(11) NOT NULL,
+  PRIMARY KEY (`cfg_owner_id`),
+  KEY `cfg_owner_id_fk` (`cfg_owner_id`),
+  CONSTRAINT `cfg_owner_id_fk` FOREIGN KEY (`cfg_owner_id`) REFERENCES `owner` (`owner_id_pk`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `credentials` (
   `cred_id_pk` int(11) NOT NULL AUTO_INCREMENT,
   `cred_service` varchar(70) COLLATE utf8mb4_unicode_ci NOT NULL,

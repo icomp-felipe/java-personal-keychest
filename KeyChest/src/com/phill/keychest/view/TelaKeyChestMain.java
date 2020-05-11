@@ -12,7 +12,7 @@ import com.phill.libs.*;
 
 /** Tela principal do sistema de gerenciamento de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.2, 10/05/2020 */
+ *  @version 1.3, 11/05/2020 */
 public class TelaKeyChestMain extends JFrame {
 	
 	// Serial da JFrame
@@ -23,6 +23,7 @@ public class TelaKeyChestMain extends JFrame {
 	private final JButton botaoUsuarioAtualiza, botaoUsuarioDeleta;
 	private final JComboBox<String> comboUsuarios;
 	private final JLabel labelInfo, labelQTD;
+	private final JToggleButton botaoPadrao;
 	
 	// Atributos gráficos (Tabela)
 	private final JTable tableResultado;
@@ -53,11 +54,12 @@ public class TelaKeyChestMain extends JFrame {
 		Color color = helper.getColor();
 		
 		// Recuperando ícones
-		Icon clearIcon  = ResourceManager.getResizedIcon("icon/clear.png",20,20);
-		Icon addIcon    = ResourceManager.getResizedIcon("icon/add.png",20,20);
-		Icon deleteIcon = ResourceManager.getResizedIcon("icon/delete.png",20,20);
-		Icon updateIcon = ResourceManager.getResizedIcon("icon/edit.png",20,20);
-		Icon exitIcon   = ResourceManager.getResizedIcon("icon/shutdown.png",20,20);
+		Icon clearIcon   = ResourceManager.getResizedIcon("icon/clear.png",20,20);
+		Icon addIcon     = ResourceManager.getResizedIcon("icon/add.png",20,20);
+		Icon deleteIcon  = ResourceManager.getResizedIcon("icon/delete.png",20,20);
+		Icon updateIcon  = ResourceManager.getResizedIcon("icon/edit.png",20,20);
+		Icon exitIcon    = ResourceManager.getResizedIcon("icon/shutdown.png",20,20);
+		Icon defaultIcon = ResourceManager.getResizedIcon("icon/default.png",20,20);
 		
 		setSize(dimension);
 		setLocationRelativeTo(null);
@@ -105,26 +107,32 @@ public class TelaKeyChestMain extends JFrame {
 		comboUsuarios.setForeground(color);
 		comboUsuarios.addActionListener((event) -> listener_combo());
 		comboUsuarios.addActionListener((event) -> listener_query());
-		comboUsuarios.setBounds(12, 30, 300, 25);
+		comboUsuarios.setBounds(12, 30, 258, 25);
 		painelUsuario.add(comboUsuarios);
 		
 		JButton botaoUsuarioCria = new JButton(addIcon);
 		botaoUsuarioCria.addActionListener((event) -> action_create_user());
 		botaoUsuarioCria.setToolTipText("Cria um novo usuário");
-		botaoUsuarioCria.setBounds(324, 30, 30, 25);
+		botaoUsuarioCria.setBounds(282, 30, 30, 25);
 		painelUsuario.add(botaoUsuarioCria);
 		
 		botaoUsuarioAtualiza = new JButton(updateIcon);
 		botaoUsuarioAtualiza.addActionListener((event) -> action_update_user());
 		botaoUsuarioAtualiza.setToolTipText("Atualiza o usuário selecionado");
-		botaoUsuarioAtualiza.setBounds(366, 30, 30, 25);
+		botaoUsuarioAtualiza.setBounds(324, 30, 30, 25);
 		painelUsuario.add(botaoUsuarioAtualiza);
 		
 		botaoUsuarioDeleta = new JButton(deleteIcon);
 		botaoUsuarioDeleta.addActionListener((event) -> action_delete_user());
 		botaoUsuarioDeleta.setToolTipText("Remove o usuário selecionado");
-		botaoUsuarioDeleta.setBounds(408, 30, 30, 25);
+		botaoUsuarioDeleta.setBounds(366, 30, 30, 25);
 		painelUsuario.add(botaoUsuarioDeleta);
+		
+		botaoPadrao = new JToggleButton(defaultIcon);
+		botaoPadrao.setToolTipText("Usuário padrão");
+		botaoPadrao.addActionListener((event) -> action_toggle_default());
+		botaoPadrao.setBounds(408, 30, 30, 25);
+		painelUsuario.add(botaoPadrao);
 		
 		JButton botaoCredencialAdd = new JButton(addIcon);
 		botaoCredencialAdd.setToolTipText("Adiciona novas credenciais ao sistema");
@@ -187,6 +195,7 @@ public class TelaKeyChestMain extends JFrame {
 		mainFrame.add(labelInfo);
 		
 		action_fill_combo();
+		action_select_default();
 		onCreateOptionsPopupMenu();
 		
 		setVisible(true);
@@ -223,13 +232,34 @@ public class TelaKeyChestMain extends JFrame {
 	/************************** Implementação dos Listeners *******************************/
 	
 	/** Ajusta a visibilidade dos botões de edição de usuário. Estes só estão disponíveis
-	 *  quando algum usuário está selecionado. */
+	 *  quando algum usuário está selecionado. Também controla o estado do botão de usuário
+	 *  padrão, de acordo com o usuário selecionado e o padrão configurado no banco de dados. */
 	private void listener_combo() {
 		
 		boolean buttonVisibility = comboUsuarios.getSelectedIndex() > 0;
 
 		botaoUsuarioAtualiza.setEnabled(buttonVisibility);
 		botaoUsuarioDeleta  .setEnabled(buttonVisibility);
+		botaoPadrao         .setEnabled(buttonVisibility);
+		
+		// Se algum usuário foi selecionado
+		if (buttonVisibility) {
+			
+			// Recupero este usuário + o padrão do banco de dados
+			final Owner ownerDefault  = ConfigDAO.getDefaultUser();
+			final Owner ownerSelected = ownerList.get(comboUsuarios.getSelectedIndex()-1);
+			
+			// Dependendo desta condição, sinalizo no botão
+			if (ownerSelected.equals(ownerDefault))
+				botaoPadrao.setSelected(true);
+			else
+				botaoPadrao.setSelected(false);
+			
+		}
+		
+		// Se nenhum usuário foi selecionado, removo qualquer seleção que tenha no botão.
+		else
+			botaoPadrao.setSelected(false);
 		
 	}
 	
@@ -356,6 +386,22 @@ public class TelaKeyChestMain extends JFrame {
 			action_fill_combo();
 			
 		}
+		
+	}
+	
+	/** Configura o usuário padrão da apĺicação no banco de dados */
+	private void action_toggle_default() {
+		
+		// Aqui recupero o objeto usuário selecionado do meu ArrayList interno, ...
+		final int      index = comboUsuarios.getSelectedIndex() - 1;
+		final Owner selected = ownerList.get(index);
+		
+		// Sempre limpo a config ao clicar no botão
+		ConfigDAO.deleteDefaultUser();
+		
+		// Caso tenha sido selecionado, configuro um novo usuário padrão
+		if (botaoPadrao.isSelected())
+			ConfigDAO.insertDefaultUser(selected);
 		
 	}
 	
@@ -534,6 +580,16 @@ public class TelaKeyChestMain extends JFrame {
 		
 	}
 	
+	// Seleciona no combo o usuário padrão, apenas na instanciação desta tela
+	private void action_select_default() {
+		
+		final Owner retrieved = ConfigDAO.getDefaultUser();
+		
+		if (retrieved != null)
+			comboUsuarios.setSelectedItem(retrieved.getName());
+		
+	}
+	
 	/** Desconecta a aplicação do banco de dados e encerra o programa */
 	@Override
 	public void dispose() {
@@ -555,5 +611,4 @@ public class TelaKeyChestMain extends JFrame {
 			labelQTD.setText(size + " credenciais encontradas");
 		
 	}
-	
 }

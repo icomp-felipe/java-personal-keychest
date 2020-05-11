@@ -113,10 +113,12 @@ public class CredentialsDAO {
 				final Owner       cred_owner  = new Owner();
 				final Credentials credentials = new Credentials();
 				
-				credentials.setID      (rs.getInt   ("cred_id_pk"   ));
-				credentials.setService (rs.getString("cred_service" ));
-				credentials.setLogin   (rs.getString("cred_login"   ));
-				credentials.setPassword(rs.getString("cred_password"));
+				credentials.setID         (rs.getInt   ("cred_id_pk"   ));
+				credentials.setService    (rs.getString("cred_service" ));
+				credentials.setLogin      (rs.getString("cred_login"   ));
+				credentials.setPassword   (rs.getString("cred_password"));
+				credentials.setCreatedDate(rs.getString("cred_created_time"));
+				credentials.setUpdatedDate(rs.getString("cred_last_updated"));
 
 				cred_owner.setID  (rs.getInt   ("cred_owner_id"));
 				cred_owner.setName(rs.getString("owner_name"   ));

@@ -2,7 +2,7 @@ package com.phill.keychest.model;
 
 /** Modelagem da entidade "Owner". Contém o nome de usuário e seu ID.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.0, 04/05/2020 */
+ *  @version 1.1, 11/05/2020 */
 public class Owner {
 	
 	private int id;
@@ -34,6 +34,16 @@ public class Owner {
 	 *  @return Nome de usuário. */
 	public String getName() {
 		return this.name;
+	}
+	
+	/** Retorna verdadeiro se 'object' for um {@link Owner} e estes tiverem o mesmo id. */
+	@Override
+	public boolean equals(Object object) {
+		
+		if (object instanceof Owner)
+			return ((Owner) object).getID() == getID();
+		
+		return false;
 	}
 
 }

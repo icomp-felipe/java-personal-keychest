@@ -10,7 +10,7 @@ import com.phill.libs.*;
 
 /** Implementa a tela de cadastro e edição de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.1, 10/05/2020 */
+ *  @version 1.2, 11/05/2020 */
 public class PanelCredentials extends JPanel {
 
 	// Serial da JFrame
@@ -20,6 +20,7 @@ public class PanelCredentials extends JPanel {
 	private final JTextField textServico, textLogin;
 	private final JPasswordField textSenha;
 	private final JComboBox<String> comboUsuarios;
+	private JLabel textCreated, textUpdated;
 	
 	// Atributos dinâmicos
 	private final ArrayList<Owner> ownerList;
@@ -53,7 +54,9 @@ public class PanelCredentials extends JPanel {
 		Icon viewIcon = ResourceManager.getResizedIcon("icon/eye.png",20,20);
 		
 		// Inicializando atributos gráficos
-		setPreferredSize(new Dimension(450,165));
+		final int height = (credentials == null) ? 165 : 235;	// Oculta os labels de criação e atualização em caso de tela de cadastro
+		
+		setPreferredSize(new Dimension(450,height));
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		setLayout(null);
 		
@@ -112,6 +115,37 @@ public class PanelCredentials extends JPanel {
 		comboUsuarios.setBounds(80, 130, 350, 25);
 		add(comboUsuarios);
 		
+		// Constrói essa parte (datas) apenas na tela de edição, quanto 'credentials' não é nula
+		if (credentials != null) {
+		
+			JLabel labelCreated = new JLabel("Criado em");
+			labelCreated.setHorizontalAlignment(JLabel.CENTER);
+			labelCreated.setFont(fonte);
+			labelCreated.setBounds(40, 170, 160, 25);
+			add(labelCreated);
+			
+			textCreated = new JLabel();
+			textCreated.setHorizontalAlignment(JLabel.CENTER);
+			textCreated.setForeground(color);
+			textCreated.setFont(fonte);
+			textCreated.setBounds(40, 200, 160, 25);
+			add(textCreated);
+			
+			JLabel labelUpdated = new JLabel("Última atualização");
+			labelUpdated.setHorizontalAlignment(JLabel.CENTER);
+			labelUpdated.setFont(fonte);
+			labelUpdated.setBounds(250, 170, 160, 25);
+			add(labelUpdated);
+			
+			textUpdated = new JLabel();
+			textUpdated.setHorizontalAlignment(JLabel.CENTER);
+			textUpdated.setForeground(color);
+			textUpdated.setFont(fonte);
+			textUpdated.setBounds(250, 200, 160, 25);
+			add(textUpdated);
+		
+		}
+		
 		// Preenchendo o combo com usuários
 		comboUsuarios.addItem("Selecione abaixo");
 		
@@ -130,6 +164,9 @@ public class PanelCredentials extends JPanel {
 		textServico.setText(this.credentials.getService ());
 		textLogin  .setText(this.credentials.getLogin   ());
 		textSenha  .setText(this.credentials.getPassword());
+		
+		textCreated.setText(this.credentials.getCreatedDate());
+		textUpdated.setText(this.credentials.getUpdatedDate());
 		
 		comboUsuarios.setSelectedItem(this.credentials.getOwner().getName());
 		
@@ -205,12 +242,11 @@ public class PanelCredentials extends JPanel {
 		
 		frame.setContentPane(new PanelCredentials(new ArrayList<Owner>()));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setBounds(100, 100, 450, 200);
+		frame.setBounds(100, 100, 450, 270);
 		frame.setLocationRelativeTo(null);
 		frame.setTitle("KeyChest - Test Zone");
 		
 		frame.setVisible(true);
 		
 	}
-	
 }

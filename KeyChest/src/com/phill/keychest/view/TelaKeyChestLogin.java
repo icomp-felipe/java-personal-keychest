@@ -10,7 +10,7 @@ import com.phill.keychest.bd.*;
 
 /** Classe TelaKeychestLogin - cria um ambiente gráfico para o usuário fazer login no sistema
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.0, 08/05/2020 */
+ *  @version 1.1, 11/05/2020 */
 public class TelaKeyChestLogin extends JFrame {
 
 	private static final long serialVersionUID = 1L;

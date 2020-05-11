@@ -1,16 +1,20 @@
 package com.phill.keychest.model;
 
+import org.joda.time.DateTime;
 import com.phill.libs.Resumeable;
+import com.phill.libs.time.TimeFormatter;
+import com.phill.libs.time.TimeParser;
 
 /** Modelagem da entidade "Credentials". Contém os dados de login, senha,
  *  serviço e usuário.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.0, 04/05/2020
+ *  @version 1.1, 11/05/2020
  *  @see Resumeable */
 public class Credentials implements Resumeable {
 	
 	private int id;
 	private String service, login, password;
+	private DateTime created, updated;
 	private Owner owner;
 	
 	/******************************* Bloco de Setters *************************************/
@@ -45,6 +49,20 @@ public class Credentials implements Resumeable {
 		this.owner = owner;
 	}
 	
+	/** Setter da data de criação da credencial.
+	 *  @param date - data de criação (formato SQL)
+	 *  @see TimeParser */
+	public void setCreatedDate(final String date) {
+		this.created = TimeParser.createDate(date);
+	}
+	
+	/** Setter da data de atualização da credencial.
+	 *  @param date - data de atualização (formato SQL)
+	 *  @see TimeParser */
+	public void setUpdatedDate(final String date) {
+		this.updated = TimeParser.createDate(date);
+	}
+	
 	/******************************* Bloco de Getters *************************************/
 	
 	/** Getter do ID.
@@ -75,6 +93,18 @@ public class Credentials implements Resumeable {
 	 *  @return Usuário dono da credencial */
 	public Owner getOwner() {
 		return this.owner;
+	}
+	
+	/** Getter da data de criação da credencial.
+	 *  @return {@link String} formatada com datetime dd/MM/YYYY HH:mm:ss. */
+	public String getCreatedDate() {
+		return TimeParser.retrieveDate(TimeFormatter.AWT_DATE_TIME,this.created);
+	}
+	
+	/** Getter da data de atualização da credencial.
+	 *  @return {@link String} formatada com datetime dd/MM/YYYY HH:mm:ss. */
+	public String getUpdatedDate() {
+		return TimeParser.retrieveDate(TimeFormatter.AWT_DATE_TIME,this.updated);
 	}
 	
 	/*************************** Bloco de Getters Especiais *******************************/

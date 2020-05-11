@@ -11,7 +11,7 @@ import com.phill.keychest.model.*;
  *  @version 1.0, 04/05/2020 */
 public class OwnerDAO {
 	
-	/** Insere um nov usuário no banco de dados.
+	/** Insere um novo usuário no banco de dados.
 	 *  @param name - nome de usuário
 	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
 	 *  Neste caso, o console deve ser consultado. */

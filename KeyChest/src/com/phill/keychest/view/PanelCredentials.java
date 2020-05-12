@@ -161,12 +161,14 @@ public class PanelCredentials extends JPanel {
 	/** Carrega os dados da credencial informada na tela. */
 	private void load() {
 		
+		final String lastUpdated = this.credentials.getUpdatedDate() == null ? "-" : this.credentials.getUpdatedDate();
+		
 		textServico.setText(this.credentials.getService ());
 		textLogin  .setText(this.credentials.getLogin   ());
 		textSenha  .setText(this.credentials.getPassword());
 		
 		textCreated.setText(this.credentials.getCreatedDate());
-		textUpdated.setText(this.credentials.getUpdatedDate());
+		textUpdated.setText(lastUpdated);
 		
 		comboUsuarios.setSelectedItem(this.credentials.getOwner().getName());
 		

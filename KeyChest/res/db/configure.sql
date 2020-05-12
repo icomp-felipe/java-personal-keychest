@@ -26,7 +26,7 @@ CREATE TABLE `credentials` (
   `cred_password` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `cred_owner_id` int(11) NOT NULL,
   `cred_created_time` timestamp NULL DEFAULT current_timestamp(),
-  `cred_last_updated` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `cred_last_updated` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
   PRIMARY KEY (`cred_id_pk`),
   KEY `cred_owner_id_fk` (`cred_owner_id`),
   CONSTRAINT `cred_owner_id_fk` FOREIGN KEY (`cred_owner_id`) REFERENCES `owner` (`owner_id_pk`) ON DELETE NO ACTION ON UPDATE NO ACTION

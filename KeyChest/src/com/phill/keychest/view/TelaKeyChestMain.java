@@ -416,6 +416,22 @@ public class TelaKeyChestMain extends JFrame {
 		// Construindo a janela...
 		PanelCredentials screen = new PanelCredentials(ownerList);
 		screen.setOwner(owner);
+		screen.setOpaque(false);
+		
+		/*PaintedOptionPane pop = new PaintedOptionPane("img/background.png",screen.getPreferredSize());
+		pop.setOpaque(false);
+		
+		pop.setMessage(screen);
+		pop.setOptionType (PaintedOptionPane.OK_CANCEL_OPTION);
+		pop.setMessageType(PaintedOptionPane.PLAIN_MESSAGE);
+		
+		JDialog dialog = pop.createDialog(this,"Nova Credencial");
+		dialog.setVisible(true);
+		dialog.dispose();
+		
+		System.out.println(pop.getValue());
+		
+		*/
 		
 		int option = JOptionPane.showConfirmDialog(this,
 				screen,
@@ -424,6 +440,7 @@ public class TelaKeyChestMain extends JFrame {
 				JOptionPane.PLAIN_MESSAGE);
 		
 		// se a opção, "OK" foi selecionada...
+		
 		if (option == JOptionPane.OK_OPTION) {
 			
 			// salvo os dados no banco e atualizo a tabela

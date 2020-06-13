@@ -100,7 +100,7 @@ public class PanelCredentials extends JPanel {
 		JToggleButton mostraSenha = new JToggleButton(viewIcon);
 		mostraSenha.setToolTipText("Exibe ou oculta a senha");
 		mostraSenha.setBounds(405, 90, 25, 25);
-		mostraSenha.addActionListener((event) -> { if (mostraSenha.isSelected()) textSenha.setEchoChar((char)0); else textSenha.setEchoChar('*'); } );
+		mostraSenha.addActionListener((event) -> { if (mostraSenha.isSelected()) textSenha.setEchoChar((char)0); else textSenha.setEchoChar('*'); textSenha.requestFocus(); } );
 		add(mostraSenha);
 		
 		JLabel labelUsuario = new JLabel("Usuário:");

@@ -9,6 +9,9 @@ import com.phill.keychest.bd.*;
 import com.phill.keychest.model.*;
 import com.phill.keychest.controller.*;
 import com.phill.libs.*;
+import com.phill.libs.sys.ClipboardUtils;
+import com.phill.libs.ui.*;
+import com.phill.libs.table.JTableMouseListener;
 
 /** Tela principal do sistema de gerenciamento de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
@@ -151,7 +154,7 @@ public class TelaKeyChestMain extends JFrame {
 		
 		tableResultado = new JTable(modelo);
 		tableResultado.setOpaque(false);
-		tableResultado.addMouseListener(new TableMouseListener(tableResultado));
+		tableResultado.addMouseListener(new JTableMouseListener(tableResultado));
 		tableResultado.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		tableResultado.getColumnModel().getColumn(3).setCellRenderer(new PasswordFieldTableCellRenderer());
@@ -309,9 +312,9 @@ public class TelaKeyChestMain extends JFrame {
 			
 			// exibo a mensagem de status.
 			if (succeeded)
-				AlertDialog.informativo("Novo usuário registrado!");
+				AlertDialog.info("Novo usuário registrado!");
 			else
-				AlertDialog.erro("Falha ao registrar usuário!\nProvavelmente o mesmo já existe!");
+				AlertDialog.error("Falha ao registrar usuário!\nProvavelmente o mesmo já existe!");
 			
 			// Por fim, atualizo o combo de usuários e seleciono o novo usuário criado
 			action_fill_combo();
@@ -346,9 +349,9 @@ public class TelaKeyChestMain extends JFrame {
 			
 				// exibo uma mensagem de status
 				if (succeeded)
-					AlertDialog.informativo("Usuário atualizado com sucesso!");
+					AlertDialog.info("Usuário atualizado com sucesso!");
 				else
-					AlertDialog.erro("Falha ao atualizar usuário!\nTalvez você esteja escolhendo um nome que já existe no sistema.");
+					AlertDialog.error("Falha ao atualizar usuário!\nTalvez você esteja escolhendo um nome que já existe no sistema.");
 			
 				// Por fim, atualizo o combo de usuários 
 				action_fill_combo();
@@ -378,9 +381,9 @@ public class TelaKeyChestMain extends JFrame {
 			
 			// exibo uma mensagem de status
 			if (succeeded)
-				AlertDialog.informativo("Usuário removido com sucesso!");
+				AlertDialog.info("Usuário removido com sucesso!");
 			else
-				AlertDialog.erro("Falha ao remover usuário!\nTalvez ainda haja alguma credencial vinculada a ele no sistema.");
+				AlertDialog.error("Falha ao remover usuário!\nTalvez ainda haja alguma credencial vinculada a ele no sistema.");
 			
 			// Por fim, atualizo o combo de usuários 
 			action_fill_combo();
@@ -502,9 +505,9 @@ public class TelaKeyChestMain extends JFrame {
 				
 				// removo a credencial da base de dados e exibo uma mensagem
 				if (CredentialsDAO.delete(selected))
-					AlertDialog.informativo("Credencial removida com sucesso!");
+					AlertDialog.info("Credencial removida com sucesso!");
 				else
-					AlertDialog.erro("Falha ao remover credencial.\nFavor verificar o console do sistema.");
+					AlertDialog.error("Falha ao remover credencial.\nFavor verificar o console do sistema.");
 				
 			}
 			
@@ -522,7 +525,7 @@ public class TelaKeyChestMain extends JFrame {
 			
 			final String login = (String) modelo.getValueAt(tableResultado.getSelectedRow(),2);
 			
-			AlertDialog.pasteToClibpoard(login);
+			ClipboardUtils.paste(login);
 			
 			showInfo("Login copiado para a área de transferência");
 			
@@ -538,7 +541,7 @@ public class TelaKeyChestMain extends JFrame {
 			
 			final String pwd = (String) modelo.getValueAt(tableResultado.getSelectedRow(),3);
 			
-			AlertDialog.pasteToClibpoard(pwd);
+			ClipboardUtils.paste(pwd);
 			
 			showInfo("Senha copiada para a área de transferência");
 			

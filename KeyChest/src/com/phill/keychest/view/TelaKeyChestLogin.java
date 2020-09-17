@@ -4,8 +4,8 @@ import java.sql.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-
 import com.phill.libs.*;
+import com.phill.libs.ui.*;
 import com.phill.keychest.bd.*;
 
 /** Classe TelaKeychestLogin - cria um ambiente gráfico para o usuário fazer login no sistema
@@ -196,7 +196,7 @@ public class TelaKeyChestLogin extends JFrame {
 			// Tratamento de endereço de servidor
 			if (server.isEmpty()) {
 				
-				AlertDialog.erro("Informe o endereço do servidor!");
+				AlertDialog.error("Informe o endereço do servidor!");
 				return;
 				
 			}

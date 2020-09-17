@@ -1,7 +1,8 @@
 package com.phill.keychest.model;
 
 import org.joda.time.DateTime;
-import com.phill.libs.Resumeable;
+
+import com.phill.libs.table.JTableRowData;
 import com.phill.libs.time.TimeFormatter;
 import com.phill.libs.time.TimeParser;
 
@@ -9,8 +10,8 @@ import com.phill.libs.time.TimeParser;
  *  serviço e usuário.
  *  @author Felipe André - fass@icomp.ufam.edu.br
  *  @version 1.1, 11/05/2020
- *  @see Resumeable */
-public class Credentials implements Resumeable {
+ *  @see JTableRowData */
+public class Credentials implements JTableRowData {
 	
 	private int id;
 	private String service, login, password;
@@ -130,7 +131,7 @@ public class Credentials implements Resumeable {
 	/** Monta um array com os dados dispostos nas colunas da JTable.
 	 *  @return Array de {@link Object} com os dados prontos para exibição na tabela. */
 	@Override
-	public Object[] getResume() {
+	public Object[] getRowData() {
 		return new Object[] { getService(), getOwner().getName(), getLogin(), getPassword(), getPasswordLength() };
 	}
 

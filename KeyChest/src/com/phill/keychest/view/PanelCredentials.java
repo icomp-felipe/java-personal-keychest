@@ -7,6 +7,7 @@ import javax.swing.border.*;
 import com.phill.keychest.model.*;
 import com.phill.keychest.controller.*;
 import com.phill.libs.*;
+import com.phill.libs.ui.*;
 
 /** Implementa a tela de cadastro e edição de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
@@ -187,7 +188,7 @@ public class PanelCredentials extends JPanel {
 		// Validação de nome de serviço: este não pode ser vazio
 		if (service.isEmpty()) {
 			
-			AlertDialog.erro("O nome de serviço não foi especificado");
+			AlertDialog.error("O nome de serviço não foi especificado");
 			return;
 			
 		}
@@ -195,7 +196,7 @@ public class PanelCredentials extends JPanel {
 		// Validação de usuário: algum deve ser selecionado
 		if (owner == null) {
 			
-			AlertDialog.erro("Nenhum usuário foi selecionado");
+			AlertDialog.error("Nenhum usuário foi selecionado");
 			return;
 			
 		}
@@ -217,14 +218,14 @@ public class PanelCredentials extends JPanel {
 		// Imprimindo mensagem de status
 		if (status)
 			if (this.credentials == null)
-				AlertDialog.informativo("Credencial cadastrada com sucesso!");
+				AlertDialog.info("Credencial cadastrada com sucesso!");
 			else
-				AlertDialog.informativo("Credencial atualizada com sucesso!");
+				AlertDialog.info("Credencial atualizada com sucesso!");
 		else
 			if (this.credentials == null)
-				AlertDialog.erro("Falha ao cadastrar credencial.\nTalvez este serviço já tenha sido cadastrado para o usuário selecionado.");
+				AlertDialog.error("Falha ao cadastrar credencial.\nTalvez este serviço já tenha sido cadastrado para o usuário selecionado.");
 			else
-				AlertDialog.erro("Falha ao atualizar credencial.\nTalvez este serviço já tenha sido cadastrado para o usuário selecionado.");
+				AlertDialog.error("Falha ao atualizar credencial.\nTalvez este serviço já tenha sido cadastrado para o usuário selecionado.");
 		
 	}
 	

@@ -3,8 +3,8 @@ package com.phill.keychest.model;
 import org.joda.time.DateTime;
 
 import com.phill.libs.table.JTableRowData;
-import com.phill.libs.time.TimeFormatter;
-import com.phill.libs.time.TimeParser;
+import com.phill.libs.time.PhillsDateFormatter;
+import com.phill.libs.time.PhillsDateParser;
 
 /** Modelagem da entidade "Credentials". Contém os dados de login, senha,
  *  serviço e usuário.
@@ -52,16 +52,16 @@ public class Credentials implements JTableRowData {
 	
 	/** Setter da data de criação da credencial.
 	 *  @param date - data de criação (formato SQL)
-	 *  @see TimeParser */
+	 *  @see PhillsDateParser */
 	public void setCreatedDate(final String date) {
-		this.created = TimeParser.createDate(date);
+		this.created = PhillsDateParser.createDate(date);
 	}
 	
 	/** Setter da data de atualização da credencial.
 	 *  @param date - data de atualização (formato SQL)
-	 *  @see TimeParser */
+	 *  @see PhillsDateParser */
 	public void setUpdatedDate(final String date) {
-		this.updated = TimeParser.createDate(date);
+		this.updated = PhillsDateParser.createDate(date);
 	}
 	
 	/******************************* Bloco de Getters *************************************/
@@ -99,13 +99,13 @@ public class Credentials implements JTableRowData {
 	/** Getter da data de criação da credencial.
 	 *  @return {@link String} formatada com datetime dd/MM/YYYY HH:mm:ss. */
 	public String getCreatedDate() {
-		return TimeParser.retrieveDate(TimeFormatter.AWT_DATE_TIME,this.created);
+		return PhillsDateParser.retrieveDate(this.created,PhillsDateFormatter.AWT_DATE_TIME);
 	}
 	
 	/** Getter da data de atualização da credencial.
 	 *  @return {@link String} formatada com datetime dd/MM/YYYY HH:mm:ss. */
 	public String getUpdatedDate() {
-		return TimeParser.retrieveDate(TimeFormatter.AWT_DATE_TIME,this.updated);
+		return PhillsDateParser.retrieveDate(this.updated,PhillsDateFormatter.AWT_DATE_TIME);
 	}
 	
 	/*************************** Bloco de Getters Especiais *******************************/

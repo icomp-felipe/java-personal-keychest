@@ -12,6 +12,9 @@ import com.phill.libs.*;
 import com.phill.libs.sys.ClipboardUtils;
 import com.phill.libs.ui.*;
 import com.phill.libs.table.JTableMouseListener;
+import com.phill.libs.table.LockedTableModel;
+import com.phill.libs.table.PWDTableCellRenderer;
+import com.phill.libs.table.TableUtils;
 
 /** Tela principal do sistema de gerenciamento de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
@@ -57,12 +60,12 @@ public class TelaKeyChestMain extends JFrame {
 		Color color = helper.getColor();
 		
 		// Recuperando ícones
-		Icon clearIcon   = ResourceManager.getResizedIcon("icon/clear.png",20,20);
-		Icon addIcon     = ResourceManager.getResizedIcon("icon/add.png",20,20);
-		Icon deleteIcon  = ResourceManager.getResizedIcon("icon/delete.png",20,20);
-		Icon updateIcon  = ResourceManager.getResizedIcon("icon/edit.png",20,20);
-		Icon exitIcon    = ResourceManager.getResizedIcon("icon/shutdown.png",20,20);
-		Icon defaultIcon = ResourceManager.getResizedIcon("icon/default.png",20,20);
+		Icon clearIcon   = ResourceManager.getIcon("icon/clear.png",20,20);
+		Icon addIcon     = ResourceManager.getIcon("icon/add.png",20,20);
+		Icon deleteIcon  = ResourceManager.getIcon("icon/delete.png",20,20);
+		Icon updateIcon  = ResourceManager.getIcon("icon/edit.png",20,20);
+		Icon exitIcon    = ResourceManager.getIcon("icon/shutdown.png",20,20);
+		Icon defaultIcon = ResourceManager.getIcon("icon/default.png",20,20);
 		
 		setSize(dimension);
 		setLocationRelativeTo(null);
@@ -85,7 +88,7 @@ public class TelaKeyChestMain extends JFrame {
 		painelServico.setLayout(null);
 		
 		textServico = new JTextField();
-		textServico.addKeyListener((KeyboardAdapter) (event) -> listener_query());
+		textServico.addKeyListener((KeyReleasedListener) (event) -> listener_query());
 		textServico.setFont(fonte);
 		textServico.setForeground(color);
 		textServico.setBounds(12, 30, 385, 25);
@@ -157,7 +160,7 @@ public class TelaKeyChestMain extends JFrame {
 		tableResultado.addMouseListener(new JTableMouseListener(tableResultado));
 		tableResultado.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
-		tableResultado.getColumnModel().getColumn(3).setCellRenderer(new PasswordFieldTableCellRenderer());
+		tableResultado.getColumnModel().getColumn(3).setCellRenderer(new PWDTableCellRenderer());
 		tableResultado.getColumnModel().getColumn(3).setCellEditor  (new DefaultCellEditor(new JPasswordField()));
 		
 		final DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();

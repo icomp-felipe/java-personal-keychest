@@ -150,7 +150,7 @@ public class TelaKeyChestLogin extends JFrame {
 		botaoEntrar.setBounds(450, 228, 85, 25);
 		mainPanel.add(botaoEntrar);
 		
-		KeyListener listener = (KeyboardAdapter) (event) -> { if (event.getKeyCode() == KeyEvent.VK_ENTER) botaoEntrar.doClick(); };
+		KeyListener listener = (KeyReleasedListener) (event) -> { if (event.getKeyCode() == KeyEvent.VK_ENTER) botaoEntrar.doClick(); };
 		textSenha   .addKeyListener(listener);
 		textEndereco.addKeyListener(listener);
 		

@@ -52,7 +52,7 @@ public class PanelCredentials extends JPanel {
 		Color color = instance.getColor();
 		
 		// Recuperando ícones
-		Icon viewIcon = ResourceManager.getResizedIcon("icon/eye.png",20,20);
+		Icon viewIcon = ResourceManager.getIcon("icon/eye.png",20,20);
 		
 		// Inicializando atributos gráficos
 		final int height = (credentials == null) ? 165 : 235;	// Oculta os labels de criação e atualização em caso de tela de cadastro

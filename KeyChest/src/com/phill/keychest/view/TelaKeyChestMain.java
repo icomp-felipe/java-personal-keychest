@@ -424,34 +424,36 @@ public class TelaKeyChestMain extends JFrame {
 		screen.setOwner(owner);
 		screen.setOpaque(false);
 		
-		/*PaintedOptionPane pop = new PaintedOptionPane("img/background.png",screen.getPreferredSize());
-		pop.setOpaque(false);
-		
-		pop.setMessage(screen);
-		pop.setOptionType (PaintedOptionPane.OK_CANCEL_OPTION);
-		pop.setMessageType(PaintedOptionPane.PLAIN_MESSAGE);
-		
-		JDialog dialog = pop.createDialog(this,"Nova Credencial");
-		dialog.setVisible(true);
-		dialog.dispose();
-		
-		System.out.println(pop.getValue());
-		
-		*/
-		
-		int option = JOptionPane.showConfirmDialog(this,
-				screen,
-				"Nova Credencial",
-				JOptionPane.OK_CANCEL_OPTION,
-				JOptionPane.PLAIN_MESSAGE);
-		
-		// se a opção, "OK" foi selecionada...
-		
-		if (option == JOptionPane.OK_OPTION) {
+		JOptionPane pane = new JOptionPane(screen, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION) {
 			
-			// salvo os dados no banco e atualizo a tabela
-			screen.commit();
-			listener_query();
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void selectInitialValue() {
+				screen.getFocusField().requestFocusInWindow();
+			}
+			
+		};
+		
+		// Building dialog
+		pane.createDialog("Nova Credencial").setVisible(true);
+		
+		try {
+			
+			int option = Integer.parseInt(pane.getValue().toString());
+			
+			// se a opção, "OK" foi selecionada...
+			
+			if (option == JOptionPane.OK_OPTION) {
+				
+				// salvo os dados no banco e atualizo a tabela
+				screen.commit();
+				listener_query();
+				
+			}
+			
+		}
+		catch (NumberFormatException exception) {
 			
 		}
 		

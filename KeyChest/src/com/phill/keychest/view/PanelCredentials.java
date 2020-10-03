@@ -237,19 +237,10 @@ public class PanelCredentials extends JPanel {
 			comboUsuarios.setSelectedItem(owner.getName());
 		
 	}
-
-	/** Método apenas para fins de teste. Não possui ligação alguma com o BD. */
-	public static void main(String[] args) {
-		
-		JFrame frame = new JFrame();
-		
-		frame.setContentPane(new PanelCredentials(new ArrayList<Owner>()));
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setBounds(100, 100, 450, 270);
-		frame.setLocationRelativeTo(null);
-		frame.setTitle("KeyChest - Test Zone");
-		
-		frame.setVisible(true);
-		
+	
+	/** Retorna o componente que deve ter foco inicial no JOptionPane */
+	public JComponent getFocusField() {
+		return this.textServico;
 	}
+
 }

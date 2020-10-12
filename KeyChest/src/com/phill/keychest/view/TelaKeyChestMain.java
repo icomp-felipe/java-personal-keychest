@@ -18,7 +18,7 @@ import com.phill.libs.table.TableUtils;
 
 /** Tela principal do sistema de gerenciamento de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.3, 11/05/2020 */
+ *  @version 1.4, 12/10/2020 */
 public class TelaKeyChestMain extends JFrame {
 	
 	// Serial da JFrame
@@ -43,7 +43,7 @@ public class TelaKeyChestMain extends JFrame {
 
 	/** Constrói a interface gráfica e inicializa as variáveis de controle */
 	public TelaKeyChestMain(final String serverURL) {
-		super("KeyChest - build 20200508 [" + serverURL + "]");
+		super("KeyChest - build 20201012 [" + serverURL + "]");
 		
 		// Inicializando atributos gráficos
 		GraphicsHelper helper = GraphicsHelper.getInstance();
@@ -472,19 +472,38 @@ public class TelaKeyChestMain extends JFrame {
 			
 			// Construo a tela de edição...
 			PanelCredentials screen = new PanelCredentials(ownerList,selected);
+			screen.setOpaque(false);
 			
-			int option = JOptionPane.showConfirmDialog(this,
-					screen,
-					"Editar Credencial",
-					JOptionPane.OK_CANCEL_OPTION,
-					JOptionPane.PLAIN_MESSAGE);
-			
-			// e se a opção "OK" foi escolhida...
-			if (option == JOptionPane.OK_OPTION) {
+			JOptionPane pane = new JOptionPane(screen, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION) {
 				
-				// salvo os novos dados no banco e atualizo a tabela
-				screen.commit();
-				listener_query();
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void selectInitialValue() {
+					screen.getFocusField().requestFocusInWindow();
+				}
+				
+			};
+			
+			// Building dialog
+			pane.createDialog("Editar Credencial").setVisible(true);
+			
+			try {
+				
+				int option = Integer.parseInt(pane.getValue().toString());
+				
+				// se a opção, "OK" foi selecionada...
+				
+				if (option == JOptionPane.OK_OPTION) {
+					
+					// salvo os dados no banco e atualizo a tabela
+					screen.commit();
+					listener_query();
+					
+				}
+				
+			}
+			catch (NumberFormatException exception) {
 				
 			}
 			

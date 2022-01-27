@@ -87,7 +87,7 @@ public enum Database {
 	 * @throws SQLException quando houve falha de conexão. */
 	public void test() throws SQLException, IOException {
 		
-		String query = ResourceManager.getSQLString("test-query.sql",0);
+		String query = ResourceManager.getSQLString(false, "test-query.sql");
 		Connection c = Database.INSTANCE.getConnection();
 		Statement st = c.createStatement();
 		ResultSet rs = st.executeQuery(query);

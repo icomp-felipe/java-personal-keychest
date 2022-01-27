@@ -19,7 +19,7 @@ public class OwnerDAO {
 		
 		try {
 			
-			String query = ResourceManager.getSQLString("owner-insert.sql",name);
+			String query = ResourceManager.getSQLString(true, "owner-insert.sql", name);
 			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			
@@ -49,7 +49,7 @@ public class OwnerDAO {
 		
 		try {
 			
-			String query = ResourceManager.getSQLString("owner-update.sql",name,owner.getID());
+			String query = ResourceManager.getSQLString(true, "owner-update.sql", name, owner.getID());
 			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			
@@ -78,7 +78,7 @@ public class OwnerDAO {
 		
 		try {
 			
-			String query = ResourceManager.getSQLString("owner-delete.sql",owner.getID());
+			String query = ResourceManager.getSQLString(false, "owner-delete.sql", owner.getID());
 			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			
@@ -109,7 +109,7 @@ public class OwnerDAO {
 			
 			ownerList = new ArrayList<Owner>();
 			
-			String query = ResourceManager.getSQLString("owner-select.sql",0);
+			String query = ResourceManager.getSQLString(false, "owner-select.sql");
 			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			ResultSet rs = st.executeQuery(query);

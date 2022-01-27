@@ -18,7 +18,7 @@ public class ConfigDAO {
 		
 		try {
 			
-			String query = ResourceManager.getSQLString("config-insert-duser.sql",owner.getID());
+			String query = ResourceManager.getSQLString(false, "config-insert-duser.sql", owner.getID());
 			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			
@@ -44,7 +44,7 @@ public class ConfigDAO {
 		
 		try {
 			
-			String query = ResourceManager.getSQLString("config-delete-duser.sql",0);
+			String query = ResourceManager.getSQLString(false, "config-delete-duser.sql");
 			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			
@@ -71,7 +71,7 @@ public class ConfigDAO {
 		
 		try {
 			
-			String query = ResourceManager.getSQLString("config-select-duser.sql",0);
+			String query = ResourceManager.getSQLString(false, "config-select-duser.sql");
 			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			ResultSet rs = st.executeQuery(query);

@@ -19,7 +19,7 @@ public class CredentialsDAO {
 		
 		try {
 			
-			String query = ResourceManager.getSQLString("credentials-insert.sql",credentials.getInsertFields());
+			String query = ResourceManager.getSQLString(true, "credentials-insert.sql", credentials.getInsertFields());
 			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			
@@ -45,7 +45,7 @@ public class CredentialsDAO {
 		
 		try {
 			
-			String query = ResourceManager.getSQLString("credentials-update.sql",credentials.getUpdateFields());
+			String query = ResourceManager.getSQLString(true, "credentials-update.sql", credentials.getUpdateFields());
 			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			
@@ -71,7 +71,7 @@ public class CredentialsDAO {
 		
 		try {
 			
-			String query = ResourceManager.getSQLString("credentials-delete.sql",credentials.getID());
+			String query = ResourceManager.getSQLString(false, "credentials-delete.sql", credentials.getID());
 			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			
@@ -103,7 +103,7 @@ public class CredentialsDAO {
 			
 			credentialsList = new ArrayList<Credentials>();
 			
-			String query = ResourceManager.getSQLString("credentials-select.sql",service,owner_id);
+			String query = ResourceManager.getSQLString(false, "credentials-select.sql", service, owner_id);
 			Connection c = Database.INSTANCE.getConnection();
 			Statement st = c.createStatement();
 			ResultSet rs = st.executeQuery(query);

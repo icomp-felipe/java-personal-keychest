@@ -1,6 +1,7 @@
 package com.phill.keychest.view;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.sql.*;
 import java.util.*;
 import javax.swing.*;
@@ -18,11 +19,11 @@ import com.phill.libs.table.TableUtils;
 
 /** Tela principal do sistema de gerenciamento de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.4, 12/10/2020 */
+ *  @version 2.0, 20/JAN/2023 */
 public class TelaKeyChestMain extends JFrame {
 	
 	// Serial da JFrame
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1066745826416399579L;
 	
 	// Atributos gráficos
 	private final JTextField textServico;
@@ -43,17 +44,12 @@ public class TelaKeyChestMain extends JFrame {
 
 	/** Constrói a interface gráfica e inicializa as variáveis de controle */
 	public TelaKeyChestMain(final String serverURL) {
-		super("KeyChest - build 20201012 [" + serverURL + "]");
+		super("KeyChest - build 20230120 [" + serverURL + "]");
 		
 		// Inicializando atributos gráficos
 		GraphicsHelper helper = GraphicsHelper.getInstance();
 		GraphicsHelper.setFrameIcon(this,"img/logo.png");
-		
-		Dimension dimension = new Dimension(960,560);
-		JPanel mainFrame = new JPaintedPanel("img/background.png",dimension);
-		
-		mainFrame.setLayout(null);
-		setContentPane(mainFrame);
+		ESCDispose.register(this);
 		
 		// Recuperando fontes e cores
 		Font  fonte = helper.getFont ();
@@ -67,17 +63,17 @@ public class TelaKeyChestMain extends JFrame {
 		Icon exitIcon    = ResourceManager.getIcon("icon/shutdown.png",20,20);
 		Icon defaultIcon = ResourceManager.getIcon("icon/default.png",20,20);
 		
-		setSize(dimension);
+		setSize(960,560);
 		setLocationRelativeTo(null);
 		setResizable(false);
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);		// Tira a função do botão de fechar, pra usar apenas o dispose()
-		mainFrame.setLayout(null);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		getContentPane().setLayout(null);
 		
 		JPanel painelParametros = new JPanel();
 		painelParametros.setOpaque(false);
 		painelParametros.setBorder(helper.getTitledBorder("Parâmetros"));
 		painelParametros.setBounds(12, 12, 936, 110);
-		mainFrame.add(painelParametros);
+		getContentPane().add(painelParametros);
 		painelParametros.setLayout(null);
 		
 		JPanel painelServico = new JPanel();
@@ -90,7 +86,6 @@ public class TelaKeyChestMain extends JFrame {
 		textServico = new JTextField();
 		textServico.addKeyListener((KeyReleasedListener) (event) -> listener_query());
 		textServico.setFont(fonte);
-		textServico.setForeground(color);
 		textServico.setBounds(12, 30, 385, 25);
 		painelServico.add(textServico);
 		textServico.setColumns(10);
@@ -110,7 +105,6 @@ public class TelaKeyChestMain extends JFrame {
 		
 		comboUsuarios = new JComboBox<String>();
 		comboUsuarios.setFont(fonte);
-		comboUsuarios.setForeground(color);
 		comboUsuarios.addActionListener((event) -> listener_combo());
 		comboUsuarios.addActionListener((event) -> listener_query());
 		comboUsuarios.setBounds(12, 30, 258, 25);
@@ -144,14 +138,14 @@ public class TelaKeyChestMain extends JFrame {
 		botaoCredencialAdd.setToolTipText("Adiciona novas credenciais ao sistema");
 		botaoCredencialAdd.addActionListener((event) -> action_credential_new());
 		botaoCredencialAdd.setBounds(95, 129, 30, 25);
-		mainFrame.add(botaoCredencialAdd);
+		getContentPane().add(botaoCredencialAdd);
 		
 		JPanel painelListagem = new JPanel();
 		painelListagem.setOpaque(false);
 		painelListagem.setBorder(helper.getTitledBorder("Listagem            "));
 		painelListagem.setBounds(12, 134, 936, 350);
 		painelListagem.setLayout(null);
-		mainFrame.add(painelListagem);
+		getContentPane().add(painelListagem);
 		
 		modelo  = new LockedTableModel(colunas);
 		
@@ -192,13 +186,13 @@ public class TelaKeyChestMain extends JFrame {
 		botaoSair.addActionListener((event) -> dispose());
 		botaoSair.setToolTipText("Sai do sistema");
 		botaoSair.setBounds(918, 498, 30, 25);
-		mainFrame.add(botaoSair);
+		getContentPane().add(botaoSair);
 		
 		labelInfo = new JLabel();
 		labelInfo.setFont(fonte);
 		labelInfo.setForeground(color);
 		labelInfo.setBounds(12, 496, 888, 25);
-		mainFrame.add(labelInfo);
+		getContentPane().add(labelInfo);
 		
 		action_fill_combo();
 		action_select_default();
@@ -213,13 +207,20 @@ public class TelaKeyChestMain extends JFrame {
 		
 		JPopupMenu popupMenu = new JPopupMenu();
 		
-		JMenuItem itemEditar = new JMenuItem("Editar");
-		itemEditar.addActionListener((event) -> action_table_edit());
+		// Definindo aceleradores
+		KeyStroke editar     = KeyStroke.getKeyStroke(KeyEvent.VK_F2    , 0);
+		KeyStroke deletar    = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0);
+		
+		// Definindo ações dos itens de menu
+		Action actionEditar     = new ShortcutAction("Editar"  , KeyEvent.VK_E, editar , (event) -> actionCredentialEditar());
+		Action actionDeletar    = new ShortcutAction("Excluir" , null         , deletar, (event) -> actionCredentialDelete());
+		
+		// Declarando os itens de menu
+		JMenuItem itemEditar  = new JMenuItem(actionEditar);
 		popupMenu.add(itemEditar);
 		
-		JMenuItem itemExcluir = new JMenuItem("Excluir");
-		itemExcluir.addActionListener((event) -> action_table_delete());
-		popupMenu.add(itemExcluir);
+		JMenuItem itemDeletar  = new JMenuItem(actionDeletar);
+		popupMenu.add(itemDeletar);
 		
 		popupMenu.addSeparator();
 		
@@ -231,6 +232,17 @@ public class TelaKeyChestMain extends JFrame {
 		itemCopiaPwd.addActionListener((event) -> action_table_copy_pwd());
 		popupMenu.add(itemCopiaPwd);
 		
+		// Definindo atalhos de teclado
+		final InputMap  imap = tableResultado.getInputMap (JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		final ActionMap amap = tableResultado.getActionMap();
+		
+		imap.put(editar    , "actionEditar"    );
+		imap.put(deletar   , "actionDeletar"   );
+		
+		amap.put("actionEditar"    , actionEditar    );
+		amap.put("actionDeletar"   , actionDeletar   );
+		
+		// Atribuindo menu à tabela
 		tableResultado.setComponentPopupMenu(popupMenu);
 		
 	}
@@ -462,7 +474,7 @@ public class TelaKeyChestMain extends JFrame {
 	/******************** Tratamento de Eventos de Menu da Tabela *************************/
 	
 	/** Edita os dados de uma credencial selecionada da tabela */
-	private void action_table_edit() {
+	private void actionCredentialEditar() {
 		
 		// Recuperando a credencial associada na ArrayList
 		Credentials selected = tableResultado.getSelectedRow() >= 0 ? credentialsList.get(tableResultado.getSelectedRow()) : null;
@@ -512,7 +524,7 @@ public class TelaKeyChestMain extends JFrame {
 	}
 	
 	/** Remove do banco de dados uma credencial selecionada na tabela */
-	private void action_table_delete() {
+	private void actionCredentialDelete() {
 		
 		// Recuperando a credencial associada na ArrayList
 		Credentials selected = tableResultado.getSelectedRow() >= 0 ? credentialsList.get(tableResultado.getSelectedRow()) : null;

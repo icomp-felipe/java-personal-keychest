@@ -22,7 +22,8 @@ public class TelaKeyChestLogin extends JFrame {
 	// Declaração de atributos gráficos
 	private final JTextField textLogin, textEndereco;
 	private final JPasswordField textSenha;
-	private final JRadioButton radioLocal;
+	private final JRadioButton radioLocal, radioRemota;
+	private final JButton buttonSair, buttonClear, buttonLogin;
 	private final JLabel labelConexaoStatus;
 	private final ImageIcon loading;
 	
@@ -32,10 +33,6 @@ public class TelaKeyChestLogin extends JFrame {
 	
 	// Carregando bundle de idiomas
 	private final static PropertyBundle bundle = new PropertyBundle("i18n/tela-keychest-login", null);
-	private JButton buttonSair;
-	private JButton buttonClear;
-	private JButton buttonLogin;
-	private JRadioButton radioRemota;
 	
 	public static void main(String[] args) {
 		new TelaKeyChestLogin();

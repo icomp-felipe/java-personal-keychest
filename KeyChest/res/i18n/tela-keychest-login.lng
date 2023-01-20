@@ -1,0 +1,28 @@
+########## Dicas
+hint-text-login = Informe o seu login
+hint-text-senha = Informe a sua senha de acesso
+
+hint-radio-local   = Conecta à base de dados local
+hint-radio-remota  = Conecta à uma base de dados remota
+hint-text-endereco = Digite aqui o endereço de IP ou domínio do servidor
+
+hint-button-exit  = Encerrar essa janela
+hint-button-clear = Limpa os campos de texto
+hint-button-login = Realiza o acesso ao KeyChest 2.0
+
+########## Mensagens de erro da API MFV 
+klogin-mfv-login = O login não pode ser vazio
+klogin-mfv-senha = A senha não pode ser vazia
+klogin-mfv-addr  = Informe o endereço do servidor
+
+########## Métodos
+! TelaKeychestLogin::actionLogin
+klogin-save-errors = Existe(m) alguma(s) pendência(s) nos campos de texto:\n\
+                     \n\
+                     %s\n\
+                     \n\
+                     Por favor, resolva-as antes de prosseguir
+
+! TelaKeychestLogin::utilShowLabel
+klogin-label-fail    = Usuário e/ou senha inválidos
+klogin-label-running = Validando credenciais...

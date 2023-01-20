@@ -1,27 +1,42 @@
 package com.phill.keychest.view;
 
-import java.sql.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+
 import com.phill.libs.*;
 import com.phill.libs.ui.*;
+import com.phill.libs.i18n.*;
+import com.phill.libs.mfvapi.*;
+
 import com.phill.keychest.bd.*;
 
 /** Classe TelaKeychestLogin - cria um ambiente gráfico para o usuário fazer login no sistema
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.1, 11/05/2020 */
+ *  @version 2.0, 20/JAN/2023 */
 public class TelaKeyChestLogin extends JFrame {
 
-	private static final long serialVersionUID = 1L;
+	// Serial
+	private static final long serialVersionUID = 541326736568738526L;
 	
+	// Declaração de atributos gráficos
 	private final JTextField textLogin, textEndereco;
 	private final JPasswordField textSenha;
 	private final JRadioButton radioLocal;
 	private final JLabel labelConexaoStatus;
-	private final ImageIcon loading = new ImageIcon(ResourceManager.getResource("img/loading.gif"));
+	private final ImageIcon loading;
 	
-	/** Construtor da classe TelaLogin - Cria a janela */
+	// MFV API
+	private final MandatoryFieldsManager fieldValidator;
+	private final MandatoryFieldsLogger  fieldLogger;
+	
+	// Carregando bundle de idiomas
+	private final static PropertyBundle bundle = new PropertyBundle("i18n/tela-keychest-login", null);
+	private JButton buttonSair;
+	private JButton buttonClear;
+	private JButton buttonLogin;
+	private JRadioButton radioRemota;
+	
 	public static void main(String[] args) {
 		new TelaKeyChestLogin();
 	}
@@ -31,35 +46,36 @@ public class TelaKeyChestLogin extends JFrame {
 		super("KeyChest - Login");
 		
 		// Inicializando atributos gráficos
-		GraphicsHelper helper = GraphicsHelper.getInstance();
+		GraphicsHelper instance = GraphicsHelper.getInstance();
 		GraphicsHelper.setFrameIcon(this,"img/logo.png");
-		
-		Dimension dimension = new Dimension(550,300);
-		JPanel    mainPanel = new JPaintedPanel("img/background.png",dimension);
-		
-		mainPanel.setLayout(null);
-		setContentPane(mainPanel);
-		
-		// Recuperando fontes e cores
-		Font dialog = helper.getFont (  );
-		Font  fonte = helper.getFont (18);
-		Font radios = new Font("Dialog", Font.PLAIN, 12);
-		Color color = helper.getColor(  );
+		ESCDispose.register(this);
+		getContentPane().setLayout(null);
 		
 		// Recuperando ícones
-		ImageIcon loginIcon = new ImageIcon(ResourceManager.getResource("img/login.png"));
+		ImageIcon key = new ImageIcon(ResourceManager.getResource("img/login.png"));
 		
-		// Declaração da janela gráfica
-		JLabel labelImagem = new JLabel(loginIcon);
+		Icon exitIcon  = ResourceManager.getIcon("icon/on-off.png", 20, 20);
+		Icon clearIcon = ResourceManager.getIcon("icon/brush.png" , 20, 20);
+		Icon loginIcon = ResourceManager.getIcon("icon/user.png"  , 20, 20);
+		
+		this.loading = new ImageIcon(ResourceManager.getResource("icon/loading.gif"));
+		
+		// Recuperando fontes e cores
+		Font  dialg = instance.getFont ();
+		Color color = instance.getColor();
+		Font fonte = instance.getFont(18);
+
+		// Imagem da chave
+		JLabel labelImagem = new JLabel(key);
 		labelImagem.setBounds(12, 12, 232, 235);
-		mainPanel.add(labelImagem);
+		getContentPane().add(labelImagem);
 		
+		// Painel 'Credenciais'
 		JPanel painelCredenciais = new JPanel();
-		painelCredenciais.setOpaque(false);
-		painelCredenciais.setBorder(helper.getTitledBorder("Credenciais"));
+		painelCredenciais.setBorder(instance.getTitledBorder("Credenciais"));
 		painelCredenciais.setBounds(250, 10, 285, 110);
 		painelCredenciais.setLayout(null);
-		mainPanel.add(painelCredenciais);
+		getContentPane().add(painelCredenciais);
 		
 		JLabel labelLogin = new JLabel("Login:");
 		labelLogin.setBounds(12, 28, 75, 25);
@@ -69,9 +85,9 @@ public class TelaKeyChestLogin extends JFrame {
 		
 		textLogin = new JTextField();
 		textLogin.setBounds(95, 30, 180, 25);
-		textLogin.setFont(dialog);
+		textLogin.setFont(dialg);
 		textLogin.setForeground(color);
-		textLogin.setToolTipText("Digite aqui seu login");
+		textLogin.setToolTipText(bundle.getString("hint-text-login"));
 		painelCredenciais.add(textLogin);
 		
 		JLabel labelSenha = new JLabel("Senha:");
@@ -81,39 +97,38 @@ public class TelaKeyChestLogin extends JFrame {
 		painelCredenciais.add(labelSenha);
 		
 		textSenha = new JPasswordField();
+		textSenha.setEchoChar('*');
 		textSenha.setBounds(95, 70, 180, 25);
-		textSenha.setFont(dialog);
+		textSenha.setFont(dialg);
 		textSenha.setForeground(color);
-		textSenha.setToolTipText("Digite aqui sua senha");
+		textSenha.setToolTipText(bundle.getString("hint-text-senha"));
 		painelCredenciais.add(textSenha);
 		
+		// Painel 'Opções'
 		JPanel painelOpcoes = new JPanel();
-		painelOpcoes.setOpaque(false);
-		painelOpcoes.setBorder(helper.getTitledBorder("Opções"));
+		painelOpcoes.setBorder(instance.getTitledBorder("Opções"));
 		painelOpcoes.setBounds(250, 120, 285, 100);
 		painelOpcoes.setLayout(null);
-		mainPanel.add(painelOpcoes);
+		getContentPane().add(painelOpcoes);
 		
 		JLabel labelConexao = new JLabel("Conexão:");
 		labelConexao.setHorizontalAlignment(JLabel.RIGHT);
-		labelConexao.setFont(dialog);
+		labelConexao.setFont(dialg);
 		labelConexao.setBounds(12, 30, 75, 20);
 		painelOpcoes.add(labelConexao);
 		
 		radioLocal = new JRadioButton("Local");
-		radioLocal.setToolTipText("Selecionar conexão local");
-		radioLocal.addActionListener((event) -> control_text_address());
-		radioLocal.setOpaque(false);
+		radioLocal.setToolTipText(bundle.getString("hint-radio-local"));
+		radioLocal.addActionListener((event) -> utilAddressLabel());
 		radioLocal.setSelected(true);
-		radioLocal.setFont(radios);
+		radioLocal.setFont(dialg);
 		radioLocal.setBounds(105, 30, 70, 20);
 		painelOpcoes.add(radioLocal);
 		
-		JRadioButton radioRemota = new JRadioButton("Remota");
-		radioRemota.addActionListener((event) -> control_text_address());
-		radioRemota.setToolTipText("Selecionar conexão remota");
-		radioRemota.setOpaque(false);
-		radioRemota.setFont(radios);
+		radioRemota = new JRadioButton("Remota");
+		radioRemota.setToolTipText(bundle.getString("hint-radio-remota"));
+		radioRemota.addActionListener((event) -> utilAddressLabel());
+		radioRemota.setFont(dialg);
 		radioRemota.setBounds(175, 30, 100, 20);
 		painelOpcoes.add(radioRemota);
 		
@@ -123,54 +138,137 @@ public class TelaKeyChestLogin extends JFrame {
 		
 		JLabel labelEndereco = new JLabel("Endereço:");
 		labelEndereco.setHorizontalAlignment(JLabel.RIGHT);
-		labelEndereco.setFont(dialog);
+		labelEndereco.setFont(dialg);
 		labelEndereco.setBounds(12, 60, 75, 20);
 		painelOpcoes.add(labelEndereco);
 		
 		textEndereco = new JTextField("localhost");
-		textEndereco.setToolTipText("Digite aqui o endereço de IP ou domínio do servidor");
+		textEndereco.setToolTipText(bundle.getString("hint-text-endereco"));
 		textEndereco.setEditable(false);
-		textEndereco.setFont(dialog);
+		textEndereco.setFont(dialg);
 		textEndereco.setForeground(color);
 		textEndereco.setBounds(95, 60, 180, 25);
 		painelOpcoes.add(textEndereco);
 		
-		JButton botaoSair = new JButton("Sair");
-		botaoSair.addActionListener((event) -> dispose());
-		botaoSair.setBounds(250, 228, 85, 25);
-		mainPanel.add(botaoSair);
+		// Botões
+		buttonSair = new JButton(exitIcon);
+		buttonSair.addActionListener((event) -> dispose());
+		buttonSair.setToolTipText(bundle.getString("hint-button-exit"));
+		buttonSair.setBounds(335, 228, 30, 25);
+		getContentPane().add(buttonSair);
 		
-		JButton botaoLimpar = new JButton("Limpar");
-		botaoLimpar.addActionListener((event) -> limpaCampos());
-		botaoLimpar.setBounds(350, 228, 85, 25);
-		mainPanel.add(botaoLimpar);
+		buttonClear = new JButton(clearIcon);
+		buttonClear.addActionListener((event) -> actionClear());
+		buttonClear.setToolTipText(bundle.getString("hint-button-clear"));
+		buttonClear.setBounds(377, 228, 30, 25);
+		getContentPane().add(buttonClear);
 		
-		JButton botaoEntrar = new JButton("Entrar");
-		botaoEntrar.addActionListener((event) -> tryLogin());
-		botaoEntrar.setBounds(450, 228, 85, 25);
-		mainPanel.add(botaoEntrar);
-		
-		KeyListener listener = (KeyReleasedListener) (event) -> { if (event.getKeyCode() == KeyEvent.VK_ENTER) botaoEntrar.doClick(); };
-		textSenha   .addKeyListener(listener);
-		textEndereco.addKeyListener(listener);
+		buttonLogin = new JButton(loginIcon);
+		buttonLogin.addActionListener((event) -> actionLogin());
+		buttonLogin.setToolTipText(bundle.getString("hint-button-login"));
+		buttonLogin.setBounds(419, 228, 30, 25);
+		getContentPane().add(buttonLogin);
 		
 		labelConexaoStatus = new JLabel();
 		labelConexaoStatus.setHorizontalAlignment(JLabel.LEFT);
 		labelConexaoStatus.setBounds(12, 245, 220, 20);
 		labelConexaoStatus.setVisible(false);
-		mainPanel.add(labelConexaoStatus);
+		getContentPane().add(labelConexaoStatus);
+		
+		// Definindo listener do botão 'Enter'
+		KeyListener listener = (KeyReleasedListener) (event) -> { if (event.getKeyCode() == KeyEvent.VK_ENTER) buttonLogin.doClick(); };
+		
+		textLogin   .addKeyListener(listener);
+		textSenha   .addKeyListener(listener);
+		radioRemota .addKeyListener(listener);
+		radioLocal  .addKeyListener(listener);
+		textEndereco.addKeyListener(listener);
+		
+		// Cadastrando validação de campos
+		this.fieldValidator = new MandatoryFieldsManager();
+		this.fieldLogger    = new MandatoryFieldsLogger ();
 
-	    setSize(dimension);
+		// Validação de Dados da GUI
+		fieldValidator.addPermanent(labelLogin   , () -> !textLogin.getText().isBlank()                , bundle.getString("klogin-mfv-login"), false);
+		fieldValidator.addPermanent(labelSenha   , () -> !new String(textSenha.getPassword()).isBlank(), bundle.getString("klogin-mfv-senha"), false);
+		fieldValidator.addPermanent(labelEndereco, () -> !textEndereco.getText().isBlank()             , bundle.getString("klogin-mfv-addr" ), false);
+		
+	    setSize(550,300);
 		setResizable(false);
 	    setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
 		setVisible(true);
 		
 	}
 	
+	/******************** Bloco de Tratamento de Eventos de Botões *************************/
+	
+	/** Limpa os campos de entrada de dados. */
+	private void actionClear() {
+		
+		textLogin.setText(null);
+		textSenha.setText(null);
+		
+		textLogin.requestFocus();
+		
+	}
+	
+	/** Realiza o login no sistema. */
+	private void actionLogin() {
+		
+		// Realizando validação dos campos antes de prosseguir
+		fieldValidator.validate(fieldLogger);
+		
+		// Só prossigo se todas os campos foram devidamente preenchidos
+		if (fieldLogger.hasErrors()) {
+							
+			final String errors = bundle.getFormattedString("klogin-save-errors", fieldLogger.getErrorString());
+							
+			AlertDialog.error(getTitle(), errors);
+			fieldLogger.clear(); return;
+											
+		}
+		
+		new Thread(() -> {
+		
+			// Recuperando login e senha da view
+			final String login  = textLogin.getText();
+			final String senha  = new String(textSenha.getPassword());
+			final String server = textEndereco.getText().trim();
+			
+			// Exibe o label 'carregando...'
+			utilShowLabel(false); utilLockFields(true);
+		
+			// Aqui tento conectar ao banco e validar o usuário
+			try {
+				
+				// Estabelece a conexão ao banco de acordo com a seleção na área de opções
+				Database.INSTANCE.connect(server, login, senha);
+				
+				new TelaKeyChestMain(server);
+				dispose();
+				
+			}
+			catch (Exception exception) {
+				
+				// Exibe o label 'falha'
+				utilShowLabel(true);
+				
+			}
+			finally {
+				
+				utilLockFields(false);
+				
+			}
+			
+		}).start();
+		
+	}
+	
+	/************************ Bloco de Métodos Utilitários *********************************/
+	
 	/** Controla o comportamento do input de endereços */
-	private void control_text_address() {
+	private void utilAddressLabel() {
 
 		if (radioLocal.isSelected())
 			textEndereco.setText("localhost");
@@ -182,71 +280,52 @@ public class TelaKeyChestLogin extends JFrame {
 		textEndereco.setEditable(!radioLocal.isSelected());
 		
 	}
-
-	/** Implementa a tentativa de login no sistema */
-	private void tryLogin() {
+	
+	/** Controla o bloqueio dos campos de entrada da tela.
+	 *  @param lockFields - bloqueia ou desbloqueia os campos de entrada de dados */
+	private void utilLockFields(final boolean lockFields) {
 		
-		new Thread(() -> {
+		final boolean lock = !lockFields;
 		
-			// Recuperando login e senha da view
-			final String login  = textLogin.getText();
-			final String senha  = new String(textSenha.getPassword());
-			final String server = textEndereco.getText().trim();
+		SwingUtilities.invokeLater(() -> {
+		
+			textLogin   .setEditable(lock);
+			textSenha   .setEditable(lock);
+			textEndereco.setEditable(!radioLocal.isSelected());
 			
-			// Tratamento de endereço de servidor
-			if (server.isEmpty()) {
-				
-				AlertDialog.error("Informe o endereço do servidor!");
-				return;
-				
-			}
+			radioLocal .setEnabled(lock);
+			radioRemota.setEnabled(lock);
 			
-			label(false);
+			buttonSair .setEnabled(lock);
+			buttonClear.setEnabled(lock);
+			buttonLogin.setEnabled(lock);
 		
-			// Aqui tento conectar ao banco e validar o usuário
-			try {
-				
-				// Estabelece a conexão ao banco de acordo com a seleção na área de opções
-				Database.INSTANCE.connect(server,login,senha);
-				
-				new TelaKeyChestMain(server);
-				dispose();
-				
-			}
-			catch (SQLException exception) {
-				label(true);
-			}
-			
-		
-		}).start();
+		});
 		
 	}
 	
 	/** Controla o label de conexão */
-	private void label(boolean falha) {
+	private void utilShowLabel(final boolean falha) {
 		
 		SwingUtilities.invokeLater(() -> {
 			
 			labelConexaoStatus.setVisible(true);
 			
 			if (falha) {
-				labelConexaoStatus.setText("Falha na conexão ao banco");
+				labelConexaoStatus.setText(bundle.getString("klogin-label-fail"));
 				labelConexaoStatus.setIcon(null);
 				labelConexaoStatus.setForeground(Color.RED);
 			}
 			else {
-				labelConexaoStatus.setText("Validando credenciais...");
+				
+				labelConexaoStatus.setText(bundle.getString("klogin-label-running"));
 				labelConexaoStatus.setIcon(loading);
 				labelConexaoStatus.setForeground(Color.BLACK);
+				
 			}
 			
 		});
 		
 	}
 	
-	/** Método para limpar os campos de texto da janela */
-	private void limpaCampos() {
-		textLogin.setText(null);
-		textSenha.setText(null);
-	}
 }

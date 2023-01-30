@@ -1,5 +1,6 @@
 package com.phill.keychest.controller;
 
+import java.io.IOException;
 import java.sql.*;
 import com.phill.libs.*;
 import com.phill.keychest.bd.*;
@@ -12,55 +13,35 @@ public class ConfigDAO {
 	
 	/** Configura o usuário padrão no banco de dados.
 	 *  @param owner - usuário selecionado
-	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
-	 *  Neste caso, o console deve ser consultado. */
-	public static boolean insertDefaultUser(final Owner owner) {
+	 *  @throws IOException quando os arquivos sql estão inacessíveis por algum motivo
+	 *  @throws SQLException quando ocorre algum erro de banco de dados */
+	public static void insertDefaultUser(final Owner owner) throws IOException, SQLException {
 		
-		try {
+		String query = ResourceManager.getSQLString(false, "config-insert-duser.sql", owner.getID());
+		Connection c = Database.INSTANCE.getConnection();
+		Statement st = c.createStatement();
 			
-			String query = ResourceManager.getSQLString(false, "config-insert-duser.sql", owner.getID());
-			Connection c = Database.INSTANCE.getConnection();
-			Statement st = c.createStatement();
+		st.executeUpdate(query);
 			
-			st.executeUpdate(query);
+		st.close();
+		c .close();
 			
-			st.close();
-			c .close();
-			
-		}
-		catch (Exception exception) {
-			exception.printStackTrace();
-			return false;
-		}
-		
-		return true;
-		
 	}
 	
 	/** Remove o usuário padrão do banco de dados.
-	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
-	 *  Neste caso, o console deve ser consultado. */
-	public static boolean deleteDefaultUser() {
+	 *  @throws IOException quando os arquivos sql estão inacessíveis por algum motivo
+	 *  @throws SQLException quando ocorre algum erro de banco de dados */
+	public static void deleteDefaultUser() throws IOException, SQLException {
 		
-		try {
+		String query = ResourceManager.getSQLString(false, "config-delete-duser.sql");
+		Connection c = Database.INSTANCE.getConnection();
+		Statement st = c.createStatement();
 			
-			String query = ResourceManager.getSQLString(false, "config-delete-duser.sql");
-			Connection c = Database.INSTANCE.getConnection();
-			Statement st = c.createStatement();
+		st.executeUpdate(query);
 			
-			st.executeUpdate(query);
+		st.close();
+		c .close();
 			
-			st.close();
-			c .close();
-			
-		}
-		catch (Exception exception) {
-			exception.printStackTrace();
-			return false;
-		}
-		
-		return true;
-		
 	}
 	
 	/** Recupera o usuário padrão do banco de dados.

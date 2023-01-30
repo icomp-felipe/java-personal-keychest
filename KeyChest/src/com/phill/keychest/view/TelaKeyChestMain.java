@@ -347,14 +347,55 @@ public class TelaKeyChestMain extends JFrame {
 				comboUsuarios.setSelectedItem(user);
 				
 			}
-			catch (SQLIntegrityConstraintViolationException esception) {
+			catch (SQLIntegrityConstraintViolationException exception) {
 				
 				AlertDialog.error(title, bundle.getString("kchest-user-create-duplica"));
 				
 			}
 			catch (Exception exception) {
 				
+				exception.printStackTrace();
 				AlertDialog.error(title, bundle.getString("kchest-user-create-exception"));
+				
+			}
+			
+		}
+		
+	}
+	
+	/** Exibe a tela de remoção de um usuário selecionado */
+	private void actionUserDelete() {
+		
+		// Aqui recupero o objeto usuário selecionado do meu ArrayList interno, ...
+		final int      index = comboUsuarios.getSelectedIndex() - 1;
+		final Owner selected = ownerList.get(index);
+
+		// exibo um diálogo de confirmação de exclusão...
+		String title  = bundle.getString("kchest-user-delete-title");
+		String dialog = bundle.getFormattedString("kchest-user-delete-confirm", selected.getName());
+		
+		// e, se desejo mesmo excluir...
+		if (AlertDialog.dialog(title, dialog) == AlertDialog.OK_OPTION) {
+			
+			try {
+				
+				OwnerDAO.delete(selected);
+				
+				AlertDialog.info(title, bundle.getString("kchest-user-delete-success"));
+				
+				// Por fim, atualizo o combo de usuários 
+				actionFillCombos();
+				
+			}
+			catch (SQLIntegrityConstraintViolationException exception) {
+				
+				AlertDialog.error(title, bundle.getString("kchest-user-delete-constraint"));
+				
+			}
+			catch (Exception exception) {
+				
+				exception.printStackTrace();
+				AlertDialog.error(title, bundle.getString("kchest-user-delete-exception"));
 				
 			}
 			
@@ -397,13 +438,14 @@ public class TelaKeyChestMain extends JFrame {
 					actionFillCombos();
 					
 				}
-				catch (SQLIntegrityConstraintViolationException esception) {
+				catch (SQLIntegrityConstraintViolationException exception) {
 					
 					AlertDialog.error(title, bundle.getString("kchest-user-update-duplica"));
 					
 				}
 				catch (Exception exception) {
 					
+					exception.printStackTrace();
 					AlertDialog.error(title, bundle.getString("kchest-user-update-exception"));
 					
 				}
@@ -414,49 +456,29 @@ public class TelaKeyChestMain extends JFrame {
 		
 	}
 	
-	/** Exibe a tela de remoção de um usuário selecionado */
-	private void actionUserDelete() {
-		
-		// Aqui recupero o objeto usuário selecionado do meu ArrayList interno, ...
-		final int      index = comboUsuarios.getSelectedIndex() - 1;
-		final Owner selected = ownerList.get(index);
-
-		// exibo um diálogo de confirmação de exclusão...
-		String message = ResourceManager.getText(this,"user-deletion-confirm.txt",selected.getName());
-		int choice = AlertDialog.dialog(message);
-		
-		// e, se desejo mesmo excluir...
-		if (choice == AlertDialog.OK_OPTION) {
-			
-			// removo o usuário do banco e...
-			boolean succeeded = OwnerDAO.delete(selected);
-			
-			// exibo uma mensagem de status
-			if (succeeded)
-				AlertDialog.info("Usuário removido com sucesso!");
-			else
-				AlertDialog.error("Falha ao remover usuário!\nTalvez ainda haja alguma credencial vinculada a ele no sistema.");
-			
-			// Por fim, atualizo o combo de usuários 
-			actionFillCombos();
-			
-		}
-		
-	}
-	
-	/** Configura o usuário padrão da apĺicação no banco de dados */
+	/** Configura o usuário padrão da apĺicação no banco de dados. */
 	private void actionToggleDefault() {
 		
 		// Aqui recupero o objeto usuário selecionado do meu ArrayList interno, ...
 		final int      index = comboUsuarios.getSelectedIndex() - 1;
 		final Owner selected = ownerList.get(index);
 		
-		// Sempre limpo a config ao clicar no botão
-		ConfigDAO.deleteDefaultUser();
-		
-		// Caso tenha sido selecionado, configuro um novo usuário padrão
-		if (buttonUserDefault.isSelected())
-			ConfigDAO.insertDefaultUser(selected);
+		try {
+			
+			// Sempre limpo a config ao clicar no botão
+			ConfigDAO.deleteDefaultUser();
+			
+			// Caso tenha sido selecionado, configuro um novo usuário padrão
+			if (buttonUserDefault.isSelected())
+				ConfigDAO.insertDefaultUser(selected);
+			
+		}
+		catch (Exception exception) {
+			
+			exception.printStackTrace();
+			AlertDialog.error(bundle.getString("kchest-user-toggle-title"), bundle.getString("kchest-user-toggle-exception"));
+			
+		}
 		
 	}
 	

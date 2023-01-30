@@ -37,31 +37,19 @@ public class OwnerDAO {
 	
 	/** Remove um usuário do banco de dados (quando este não tem mais nenhuma credencial cadastrada).
 	 *  @param owner - usuário selecionado
-	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
-	 *  Neste caso, o console deve ser consultado. */
-	public static boolean delete(final Owner owner) {
-		
-		try {
+	 *  @throws IOException quando os arquivos sql estão inacessíveis por algum motivo
+	 *  @throws SQLException quando ocorre algum erro de banco de dados */
+	public static void delete(final Owner owner) throws IOException, SQLException {
 			
-			String query = ResourceManager.getSQLString(false, "owner-delete.sql", owner.getID());
-			Connection c = Database.INSTANCE.getConnection();
-			Statement st = c.createStatement();
+		String query = ResourceManager.getSQLString(false, "owner-delete.sql", owner.getID());
+		Connection c = Database.INSTANCE.getConnection();
+		Statement st = c.createStatement();
 			
-			st.executeUpdate(query);
+		st.executeUpdate(query);
 			
-			st.close();
-			c .close();
+		st.close();
+		c .close();
 			
-		} catch (SQLIntegrityConstraintViolationException exception) {
-			return false;
-		}
-		catch (Exception exception) {
-			exception.printStackTrace();
-			return false;
-		}
-		
-		return true;
-		
 	}
 	
 	/** Lista todos os usuários cadastrados na base de dados.

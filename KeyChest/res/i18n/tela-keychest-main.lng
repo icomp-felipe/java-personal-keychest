@@ -19,6 +19,19 @@ kchest-user-create-duplica   = Falha ao registrar usuário!\n\
 kchest-user-create-exception = Falha ao registrar usuário!\n\
                                Verifique o console para mais informações.
 
+! TelaKeychestMain::actionUserDelete
+kchest-user-delete-title      = KeyChest v.2.0 - Remover Usuário
+kchest-user-delete-confirm    = O usuário selecionado (abaixo) será permanentemente removido do sistema:\n\
+                                \n\
+                                → %s ←\n\
+                                \n\
+                                Deseja continuar?
+kchest-user-delete-success    = Usuário removido com sucesso!constraint
+kchest-user-delete-constraint = Falha ao remover usuário!\n\
+                                Ainda há serviços registrados em seu nome.
+kchest-user-delete-exception  = Falha ao remover usuário!\n\
+                                Verifique o console para mais informações.
+
 ! TelaKeychestMain::actionUserUpdate
 kchest-user-update-title     = KeyChest v.2.0 - Atualizar Usuário
 kchest-user-update-dialog    = Digite um novo nome de usuário no campo abaixo:
@@ -31,4 +44,9 @@ kchest-user-update-success   = Usuário atualizado com sucesso!
 kchest-user-update-duplica   = Falha ao atualizar usuário!\n\
                                Já existe outro usuário registrado com este mesmo nome!
 kchest-user-update-exception = Falha ao atualizar usuário!\n\
+                               Verifique o console para mais informações.
+
+! TelaKeychestMain::actionToggleDefault
+kchest-user-toggle-title     = KeyChest v.2.0 - Usuário Padrão
+kchest-user-toggle-exception = Falha ao atualizar usuário padrão!\n\
                                Verifique o console para mais informações.

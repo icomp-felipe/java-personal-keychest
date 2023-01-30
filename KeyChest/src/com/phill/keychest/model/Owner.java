@@ -36,6 +36,17 @@ public class Owner {
 		return this.name;
 	}
 	
+	/** Prepara os dados para salvamento na base de dados.
+	 *  @return Um array de objetos na ordem dos scrips de insert / update desta entidade na base de dados. */
+	public Object[] getCommitData() {
+		return new Object[] { this.name, this.id };
+	}
+	
+	/** @return 'true' if this instance is a new database record (id = 0);<br>'false' otherwise. */
+	public boolean isNewRecord() {
+		return this.id == 0;
+	}
+	
 	/** Retorna verdadeiro se 'object' for um {@link Owner} e estes tiverem o mesmo id. */
 	@Override
 	public boolean equals(Object object) {

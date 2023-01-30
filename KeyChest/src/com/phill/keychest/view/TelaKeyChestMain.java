@@ -1,6 +1,7 @@
 package com.phill.keychest.view;
 
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 import java.util.*;
@@ -10,6 +11,7 @@ import com.phill.keychest.bd.*;
 import com.phill.keychest.model.*;
 import com.phill.keychest.controller.*;
 import com.phill.libs.*;
+import com.phill.libs.i18n.PropertyBundle;
 import com.phill.libs.sys.ClipboardUtils;
 import com.phill.libs.ui.*;
 import com.phill.libs.table.JTableMouseListener;
@@ -19,7 +21,7 @@ import com.phill.libs.table.TableUtils;
 
 /** Tela principal do sistema de gerenciamento de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 2.0, 20/JAN/2023 */
+ *  @version 2.0, 30/JAN/2023 */
 public class TelaKeyChestMain extends JFrame {
 	
 	// Serial da JFrame
@@ -27,33 +29,31 @@ public class TelaKeyChestMain extends JFrame {
 	
 	// Atributos gráficos
 	private final JTextField textServico;
-	private final JButton botaoUsuarioAtualiza, botaoUsuarioDeleta;
+	private final JButton buttonUserUpdate, buttonUserDelete;
 	private final JComboBox<String> comboUsuarios;
 	private final JLabel labelInfo, labelQTD;
-	private final JToggleButton botaoPadrao;
+	private final JToggleButton buttonUserDefault;
 	
 	// Atributos gráficos (Tabela)
 	private final JTable tableResultado;
     private final DefaultTableModel modelo;
-    private final String[] colunas = new String [] {"Serviço","Usuário","Login","Senha", "Tamanho"};
 
     // Atributos dinâmicos
     private Thread waitThread;
 	private ArrayList<Owner> ownerList;
 	private ArrayList<Credentials> credentialsList;
+	
+	// Carregando bundle de idiomas
+	private final static PropertyBundle bundle = new PropertyBundle("i18n/tela-keychest-main", null);
 
 	/** Constrói a interface gráfica e inicializa as variáveis de controle */
 	public TelaKeyChestMain(final String serverURL) {
-		super("KeyChest - build 20230120 [" + serverURL + "]");
+		super("KeyChest - build 20230130 [" + serverURL + "]");
 		
 		// Inicializando atributos gráficos
-		GraphicsHelper helper = GraphicsHelper.getInstance();
+		GraphicsHelper instance = GraphicsHelper.getInstance();
 		GraphicsHelper.setFrameIcon(this,"img/logo.png");
 		ESCDispose.register(this);
-		
-		// Recuperando fontes e cores
-		Font  fonte = helper.getFont ();
-		Color color = helper.getColor();
 		
 		// Recuperando ícones
 		Icon clearIcon   = ResourceManager.getIcon("icon/clear.png",20,20);
@@ -63,97 +63,99 @@ public class TelaKeyChestMain extends JFrame {
 		Icon exitIcon    = ResourceManager.getIcon("icon/shutdown.png",20,20);
 		Icon defaultIcon = ResourceManager.getIcon("icon/default.png",20,20);
 		
-		setSize(960,560);
-		setLocationRelativeTo(null);
-		setResizable(false);
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		getContentPane().setLayout(null);
+		// Recuperando fontes e cores
+		Font  fonte  = instance.getFont ();
+		Font  ubuntu = instance.getUbuntuFont();
+		Color color  = instance.getColor();
 		
+		// Painel 'Parâmetros'
 		JPanel painelParametros = new JPanel();
-		painelParametros.setOpaque(false);
-		painelParametros.setBorder(helper.getTitledBorder("Parâmetros"));
-		painelParametros.setBounds(12, 12, 936, 110);
+		painelParametros.setBorder(instance.getTitledBorder("Parâmetros"));
+		painelParametros.setBounds(10, 10, 940, 100);
 		getContentPane().add(painelParametros);
 		painelParametros.setLayout(null);
 		
+		// Subpainel 'Serviço'
 		JPanel painelServico = new JPanel();
-		painelServico.setOpaque(false);
-		painelServico.setBorder(helper.getTitledBorder("Serviço"));
-		painelServico.setBounds(12, 25, 450, 70);
+		painelServico.setBorder(instance.getTitledBorder("Serviço"));
+		painelServico.setBounds(10, 20, 450, 70);
 		painelParametros.add(painelServico);
 		painelServico.setLayout(null);
 		
 		textServico = new JTextField();
-		textServico.addKeyListener((KeyReleasedListener) (event) -> listener_query());
+		textServico.addKeyListener((KeyReleasedListener) (event) -> listenerSearch());
+		textServico.setToolTipText(bundle.getString("hint-text-servico"));
 		textServico.setFont(fonte);
-		textServico.setBounds(12, 30, 385, 25);
+		textServico.setBounds(10, 30, 390, 25);
 		painelServico.add(textServico);
-		textServico.setColumns(10);
 		
-		JButton botaoServicoLimpa = new JButton(clearIcon);
-		botaoServicoLimpa.addActionListener((event) -> action_clear());
-		botaoServicoLimpa.setToolTipText("Limpa este campo de busca");
-		botaoServicoLimpa.setBounds(408, 29, 30, 25);
-		painelServico.add(botaoServicoLimpa);
+		JButton buttonServiceClear = new JButton(clearIcon);
+		buttonServiceClear.addActionListener((event) -> actionClear());
+		buttonServiceClear.setToolTipText(bundle.getString("hint-button-clear"));
+		buttonServiceClear.setBounds(410, 30, 30, 25);
+		painelServico.add(buttonServiceClear);
 		
-		JPanel painelUsuario = new JPanel();
-		painelUsuario.setOpaque(false);
-		painelUsuario.setLayout(null);
-		painelUsuario.setBorder(helper.getTitledBorder("Usuário"));
-		painelUsuario.setBounds(474, 25, 450, 70);
-		painelParametros.add(painelUsuario);
+		// Subpainel 'Usuário'
+		JPanel panelUsuario = new JPanel();
+		panelUsuario.setLayout(null);
+		panelUsuario.setBorder(instance.getTitledBorder("Usuário"));
+		panelUsuario.setBounds(465, 20, 465, 70);
+		painelParametros.add(panelUsuario);
 		
 		comboUsuarios = new JComboBox<String>();
 		comboUsuarios.setFont(fonte);
-		comboUsuarios.addActionListener((event) -> listener_combo());
-		comboUsuarios.addActionListener((event) -> listener_query());
-		comboUsuarios.setBounds(12, 30, 258, 25);
-		painelUsuario.add(comboUsuarios);
+		comboUsuarios.addActionListener((event) -> listenerCombo());
+		comboUsuarios.addActionListener((event) -> listenerSearch ());
+		comboUsuarios.setToolTipText(bundle.getString("hint-combo-usuario"));
+		comboUsuarios.setBounds(10, 30, 258, 25);
+		panelUsuario.add(comboUsuarios);
 		
-		JButton botaoUsuarioCria = new JButton(addIcon);
-		botaoUsuarioCria.addActionListener((event) -> action_create_user());
-		botaoUsuarioCria.setToolTipText("Cria um novo usuário");
-		botaoUsuarioCria.setBounds(282, 30, 30, 25);
-		painelUsuario.add(botaoUsuarioCria);
+		JButton buttonUserCreate = new JButton(addIcon);
+		buttonUserCreate.addActionListener((event) -> actionUserCreate());
+		buttonUserCreate.setToolTipText(bundle.getString("hint-button-create"));
+		buttonUserCreate.setBounds(285, 30, 30, 25);
+		panelUsuario.add(buttonUserCreate);
 		
-		botaoUsuarioAtualiza = new JButton(updateIcon);
-		botaoUsuarioAtualiza.addActionListener((event) -> action_update_user());
-		botaoUsuarioAtualiza.setToolTipText("Atualiza o usuário selecionado");
-		botaoUsuarioAtualiza.setBounds(324, 30, 30, 25);
-		painelUsuario.add(botaoUsuarioAtualiza);
+		buttonUserUpdate = new JButton(updateIcon);
+		buttonUserUpdate.addActionListener((event) -> actionUserUpdate());
+		buttonUserUpdate.setToolTipText(bundle.getString("hint-button-update"));
+		buttonUserUpdate.setBounds(330, 30, 30, 25);
+		panelUsuario.add(buttonUserUpdate);
 		
-		botaoUsuarioDeleta = new JButton(deleteIcon);
-		botaoUsuarioDeleta.addActionListener((event) -> action_delete_user());
-		botaoUsuarioDeleta.setToolTipText("Remove o usuário selecionado");
-		botaoUsuarioDeleta.setBounds(366, 30, 30, 25);
-		painelUsuario.add(botaoUsuarioDeleta);
+		buttonUserDelete = new JButton(deleteIcon);
+		buttonUserDelete.addActionListener((event) -> actionUserDelete());
+		buttonUserDelete.setToolTipText(bundle.getString("hint-button-delete"));
+		buttonUserDelete.setBounds(375, 30, 30, 25);
+		panelUsuario.add(buttonUserDelete);
 		
-		botaoPadrao = new JToggleButton(defaultIcon);
-		botaoPadrao.setToolTipText("Usuário padrão");
-		botaoPadrao.addActionListener((event) -> action_toggle_default());
-		botaoPadrao.setBounds(408, 30, 30, 25);
-		painelUsuario.add(botaoPadrao);
+		buttonUserDefault = new JToggleButton(defaultIcon);
+		buttonUserDefault.addActionListener((event) -> actionToggleDefault());
+		buttonUserDefault.setToolTipText(bundle.getString("hint-button-toggle"));
+		buttonUserDefault.setBounds(420, 30, 30, 25);
+		panelUsuario.add(buttonUserDefault);
 		
-		JButton botaoCredencialAdd = new JButton(addIcon);
-		botaoCredencialAdd.setToolTipText("Adiciona novas credenciais ao sistema");
-		botaoCredencialAdd.addActionListener((event) -> action_credential_new());
-		botaoCredencialAdd.setBounds(95, 129, 30, 25);
-		getContentPane().add(botaoCredencialAdd);
+		// Painel 'Listagem'
+		JPanel panelListagem = new JPanel();
+		panelListagem.setBorder(instance.getTitledBorder("Listagem            "));
+		panelListagem.setBounds(10, 110, 940, 375);
+		panelListagem.setLayout(null);
+		getContentPane().add(panelListagem);
 		
-		JPanel painelListagem = new JPanel();
-		painelListagem.setOpaque(false);
-		painelListagem.setBorder(helper.getTitledBorder("Listagem            "));
-		painelListagem.setBounds(12, 134, 936, 350);
-		painelListagem.setLayout(null);
-		getContentPane().add(painelListagem);
+		JButton buttonKeyCreate = new JButton(addIcon);
+		buttonKeyCreate.addActionListener((event) -> action_credential_new());
+		buttonKeyCreate.setToolTipText(bundle.getString("hint-button-newkey"));
+		buttonKeyCreate.setBounds(95, 110, 30, 25);
+		getContentPane().add(buttonKeyCreate);
 		
-		modelo  = new LockedTableModel(colunas);
+		modelo = new LockedTableModel(new String [] {"Serviço","Usuário","Login","Senha", "Tamanho", "Última Atualização"});
 		
 		tableResultado = new JTable(modelo);
-		tableResultado.setOpaque(false);
-		tableResultado.addMouseListener(new JTableMouseListener(tableResultado));
+		tableResultado.setRowHeight(20);
+		tableResultado.getTableHeader().setFont(fonte);
+		tableResultado.setFont(ubuntu);
 		tableResultado.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
+		tableResultado.addMouseListener(new JTableMouseListener(tableResultado));
+
 		tableResultado.getColumnModel().getColumn(3).setCellRenderer(new PWDTableCellRenderer());
 		tableResultado.getColumnModel().getColumn(3).setCellEditor  (new DefaultCellEditor(new JPasswordField()));
 		
@@ -164,83 +166,89 @@ public class TelaKeyChestMain extends JFrame {
 		
 		columnModel.getColumn(4).setCellRenderer(centerRenderer);
 		
-		columnModel.getColumn(0).setPreferredWidth(165);
+		/*columnModel.getColumn(0).setPreferredWidth(165);
 		columnModel.getColumn(1).setPreferredWidth(195);
 		columnModel.getColumn(2).setPreferredWidth(195);
 		columnModel.getColumn(3).setPreferredWidth(95);
-		columnModel.getColumn(4).setPreferredWidth(25);
+		columnModel.getColumn(4).setPreferredWidth(25);*/
 		
 		JScrollPane scrollListagem = new JScrollPane(tableResultado);
-		scrollListagem.setOpaque(false);
-		scrollListagem.getViewport().setOpaque(false);
-		scrollListagem.setBounds(12, 35, 912, 280);
-		painelListagem.add(scrollListagem);
+		scrollListagem.setBounds(10, 35, 915, 305);
+		panelListagem.add(scrollListagem);
 		
 		labelQTD = new JLabel();
 		labelQTD.setFont(fonte);
 		labelQTD.setForeground(color);
-		labelQTD.setBounds(12, 320, 912, 20);
-		painelListagem.add(labelQTD);
-		
-		JButton botaoSair = new JButton(exitIcon);
-		botaoSair.addActionListener((event) -> dispose());
-		botaoSair.setToolTipText("Sai do sistema");
-		botaoSair.setBounds(918, 498, 30, 25);
-		getContentPane().add(botaoSair);
+		labelQTD.setBounds(10, 345, 920, 20);
+		panelListagem.add(labelQTD);
 		
 		labelInfo = new JLabel();
 		labelInfo.setFont(fonte);
 		labelInfo.setForeground(color);
-		labelInfo.setBounds(12, 496, 888, 25);
+		labelInfo.setBounds(10, 500, 900, 25);
 		getContentPane().add(labelInfo);
 		
-		action_fill_combo();
-		action_select_default();
+		JButton buttonExit = new JButton(exitIcon);
+		buttonExit.addActionListener((event) -> dispose());
+		buttonExit.setToolTipText(bundle.getString("hint-button-exit"));
+		buttonExit.setBounds(915, 500, 30, 25);
+		getContentPane().add(buttonExit);
+		
+		// Criando menu de popup da tabela
 		onCreateOptionsPopupMenu();
 		
+		// Ações padrão de inicialização
+		actionFillCombos();
+		actionSelectDefaultUser();
+		
+		setSize(960,560);
+		setLocationRelativeTo(null);
+		setResizable(false);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		getContentPane().setLayout(null);
 		setVisible(true);
 		
 	}
 	
-	/** Cria as opções do menu de popup da tabela */
+	/** Cria as opções do menu de popup da tabela. */
 	private void onCreateOptionsPopupMenu() {
 		
 		JPopupMenu popupMenu = new JPopupMenu();
 		
 		// Definindo aceleradores
-		KeyStroke editar     = KeyStroke.getKeyStroke(KeyEvent.VK_F2    , 0);
-		KeyStroke deletar    = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0);
+		KeyStroke editar  = KeyStroke.getKeyStroke(KeyEvent.VK_F2    , 0);
+		KeyStroke deletar = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0);
+		KeyStroke cpLogin = KeyStroke.getKeyStroke(KeyEvent.VK_L     , InputEvent.CTRL_DOWN_MASK);
+		KeyStroke cpSenha = KeyStroke.getKeyStroke(KeyEvent.VK_S     , InputEvent.CTRL_DOWN_MASK);
 		
 		// Definindo ações dos itens de menu
-		Action actionEditar     = new ShortcutAction("Editar"  , KeyEvent.VK_E, editar , (event) -> actionCredentialEditar());
-		Action actionDeletar    = new ShortcutAction("Excluir" , null         , deletar, (event) -> actionCredentialDelete());
+		Action actionEditar  = new ShortcutAction("Editar"       , KeyEvent.VK_E, editar , (event) -> actionEntryEdit  ());
+		Action actionDeletar = new ShortcutAction("Excluir"      , null         , deletar, (event) -> actionEntryDelete());
+		Action actionCpLogin = new ShortcutAction("Copiar Login" , KeyEvent.VK_L, cpLogin, (event) -> actionLoginCopy  ());
+		Action actionCpSenha = new ShortcutAction("Copiar Senha" , KeyEvent.VK_S, cpSenha, (event) -> actionPassCopy   ());
 		
 		// Declarando os itens de menu
-		JMenuItem itemEditar  = new JMenuItem(actionEditar);
-		popupMenu.add(itemEditar);
-		
-		JMenuItem itemDeletar  = new JMenuItem(actionDeletar);
-		popupMenu.add(itemDeletar);
+		JMenuItem itemEditar  = new JMenuItem(actionEditar)  ; popupMenu.add(itemEditar);
+		JMenuItem itemDeletar  = new JMenuItem(actionDeletar); popupMenu.add(itemDeletar);
 		
 		popupMenu.addSeparator();
 		
-		JMenuItem itemCopiaLogin = new JMenuItem("Copiar Login");
-		itemCopiaLogin.addActionListener((event) -> action_table_copy_login());
-		popupMenu.add(itemCopiaLogin);
-		
-		JMenuItem itemCopiaPwd = new JMenuItem("Copiar Senha");
-		itemCopiaPwd.addActionListener((event) -> action_table_copy_pwd());
-		popupMenu.add(itemCopiaPwd);
+		JMenuItem itemCopiaLogin = new JMenuItem(actionCpLogin); popupMenu.add(itemCopiaLogin);
+		JMenuItem itemCopiaPwd = new JMenuItem(actionCpSenha)  ; popupMenu.add(itemCopiaPwd);
 		
 		// Definindo atalhos de teclado
 		final InputMap  imap = tableResultado.getInputMap (JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		final ActionMap amap = tableResultado.getActionMap();
 		
-		imap.put(editar    , "actionEditar"    );
-		imap.put(deletar   , "actionDeletar"   );
+		imap.put(editar , "actionEditar" );
+		imap.put(deletar, "actionDeletar");
+		imap.put(cpLogin, "actionCpLogin");
+		imap.put(cpSenha, "actionCpSenha");
 		
-		amap.put("actionEditar"    , actionEditar    );
-		amap.put("actionDeletar"   , actionDeletar   );
+		amap.put("actionEditar" , actionEditar );
+		amap.put("actionDeletar", actionDeletar);
+		amap.put("actionCpLogin", actionCpLogin);
+		amap.put("actionCpSenha", actionCpSenha);
 		
 		// Atribuindo menu à tabela
 		tableResultado.setComponentPopupMenu(popupMenu);
@@ -252,13 +260,13 @@ public class TelaKeyChestMain extends JFrame {
 	/** Ajusta a visibilidade dos botões de edição de usuário. Estes só estão disponíveis
 	 *  quando algum usuário está selecionado. Também controla o estado do botão de usuário
 	 *  padrão, de acordo com o usuário selecionado e o padrão configurado no banco de dados. */
-	private void listener_combo() {
+	private void listenerCombo() {
 		
 		boolean buttonVisibility = comboUsuarios.getSelectedIndex() > 0;
 
-		botaoUsuarioAtualiza.setEnabled(buttonVisibility);
-		botaoUsuarioDeleta  .setEnabled(buttonVisibility);
-		botaoPadrao         .setEnabled(buttonVisibility);
+		buttonUserUpdate .setEnabled(buttonVisibility);
+		buttonUserDelete .setEnabled(buttonVisibility);
+		buttonUserDefault.setEnabled(buttonVisibility);
 		
 		// Se algum usuário foi selecionado
 		if (buttonVisibility) {
@@ -269,20 +277,20 @@ public class TelaKeyChestMain extends JFrame {
 			
 			// Dependendo desta condição, sinalizo no botão
 			if (ownerSelected.equals(ownerDefault))
-				botaoPadrao.setSelected(true);
+				buttonUserDefault.setSelected(true);
 			else
-				botaoPadrao.setSelected(false);
+				buttonUserDefault.setSelected(false);
 			
 		}
 		
 		// Se nenhum usuário foi selecionado, removo qualquer seleção que tenha no botão.
 		else
-			botaoPadrao.setSelected(false);
+			buttonUserDefault.setSelected(false);
 		
 	}
 	
 	/** Realiza as buscas de credenciais do sistema de acordo com os parâmetros de entrada (serviço e usuário). */
-	private synchronized void listener_query() {
+	private synchronized void listenerSearch() {
 		
 		// Recuperando o serviço e o usuário da tela
 		final String service = textServico.getText();
@@ -297,79 +305,108 @@ public class TelaKeyChestMain extends JFrame {
 		for (Credentials credentials: this.credentialsList)
 			TableUtils.add(modelo,credentials);
 		
-		util_update_size();
+		utilSizeUpdate();
 		
 	}
 	
 	/********************** Tratamento de Eventos de Usuários *****************************/
 	
 	/** Limpa o campo de busca de serviço e atualiza a tabela */
-	private void action_clear() {
+	private void actionClear() {
 		
 		textServico.setText(null);
 		textServico.requestFocus();
 		
-		listener_query();
+		listenerSearch();
 		
 	}
 	
 	/** Exibe a tela de criação de um novo usuário */
-	private void action_create_user() {
+	private void actionUserCreate() {
 		
 		// Exibindo o diálogo
-		String user = JOptionPane.showInputDialog("Digite um nome de usuário");
+		String title = bundle.getString("kchest-user-create-title");
+		String user  = AlertDialog.input(title, bundle.getString("kchest-user-create-dialog"));
 		
 		// Se entrei com um nome válido...
 		if ((user != null) && (!user.isEmpty())) {
 			
-			// o insiro no banco de dados e...
-			boolean succeeded = OwnerDAO.insert(user);
-			
-			// exibo a mensagem de status.
-			if (succeeded)
-				AlertDialog.info("Novo usuário registrado!");
-			else
-				AlertDialog.error("Falha ao registrar usuário!\nProvavelmente o mesmo já existe!");
-			
-			// Por fim, atualizo o combo de usuários e seleciono o novo usuário criado
-			action_fill_combo();
-			comboUsuarios.setSelectedItem(user);
+			try {
+				
+				// ...preparo um novo objeto, ...
+				final Owner owner = new Owner();
+				owner.setName(user);
+				
+				// ...o insiro no banco de dados e, ...
+				OwnerDAO.commit(owner);
+				
+				AlertDialog.info(title, bundle.getString("kchest-user-create-success"));
+				
+				// ...por fim, atualizo o combo de usuários e seleciono o novo usuário criado
+				actionFillCombos();
+				comboUsuarios.setSelectedItem(user);
+				
+			}
+			catch (SQLIntegrityConstraintViolationException esception) {
+				
+				AlertDialog.error(title, bundle.getString("kchest-user-create-duplica"));
+				
+			}
+			catch (Exception exception) {
+				
+				AlertDialog.error(title, bundle.getString("kchest-user-create-exception"));
+				
+			}
 			
 		}
 		
 	}
 	
 	/** Exibe a tela de edição de um usuário selecionado */
-	private void action_update_user() {
+	private void actionUserUpdate() {
 		
 		// Exibindo o diálogo
-		String user = JOptionPane.showInputDialog("Digite um novo nome de usuário");
+		String title = bundle.getString("kchest-user-update-title");
+		String user  = AlertDialog.input(title, bundle.getString("kchest-user-update-dialog"));
 		
 		// Se entrei com um nome válido...
-		if ((user != null) && (!user.isEmpty())) {
+		if ((user != null) && (!user.isEmpty()) ) {
 		
 			// Recupero o objeto usuário selecionado do meu ArrayList interno, ...
 			final int      index = comboUsuarios.getSelectedIndex() - 1;
 			final Owner selected = ownerList.get(index);
+			
+			// Quebra a execução caso o nome de destino seja igual ao de origem
+			if (selected.getName().equals(user)) return;
 
 			// exibo um diálogo de confirmação de atualização...
-			String message = ResourceManager.getText(this,"user-update-confirm.txt",selected.getName());
-			int choice = AlertDialog.dialog(message);
+			String dialog = bundle.getFormattedString("kchest-user-update-confirm", selected.getName(), user);
 		
 			// e, se desejo mesmo atualizar...
-			if (choice == AlertDialog.OK_OPTION) {
+			if (AlertDialog.dialog(title, dialog) == AlertDialog.OK_OPTION) {
 			
-				// atualizo os dados no banco e...
-				boolean succeeded = OwnerDAO.update(selected,user);
-			
-				// exibo uma mensagem de status
-				if (succeeded)
-					AlertDialog.info("Usuário atualizado com sucesso!");
-				else
-					AlertDialog.error("Falha ao atualizar usuário!\nTalvez você esteja escolhendo um nome que já existe no sistema.");
-			
-				// Por fim, atualizo o combo de usuários 
-				action_fill_combo();
+				try {
+					
+					// ...atualizo os dados no banco
+					selected.setName(user);
+					OwnerDAO.commit(selected);
+					
+					AlertDialog.info(title, bundle.getString("kchest-user-update-success"));
+					
+					// Por fim, atualizo o combo de usuários 
+					actionFillCombos();
+					
+				}
+				catch (SQLIntegrityConstraintViolationException esception) {
+					
+					AlertDialog.error(title, bundle.getString("kchest-user-update-duplica"));
+					
+				}
+				catch (Exception exception) {
+					
+					AlertDialog.error(title, bundle.getString("kchest-user-update-exception"));
+					
+				}
 				
 			}
 		
@@ -378,7 +415,7 @@ public class TelaKeyChestMain extends JFrame {
 	}
 	
 	/** Exibe a tela de remoção de um usuário selecionado */
-	private void action_delete_user() {
+	private void actionUserDelete() {
 		
 		// Aqui recupero o objeto usuário selecionado do meu ArrayList interno, ...
 		final int      index = comboUsuarios.getSelectedIndex() - 1;
@@ -401,14 +438,14 @@ public class TelaKeyChestMain extends JFrame {
 				AlertDialog.error("Falha ao remover usuário!\nTalvez ainda haja alguma credencial vinculada a ele no sistema.");
 			
 			// Por fim, atualizo o combo de usuários 
-			action_fill_combo();
+			actionFillCombos();
 			
 		}
 		
 	}
 	
 	/** Configura o usuário padrão da apĺicação no banco de dados */
-	private void action_toggle_default() {
+	private void actionToggleDefault() {
 		
 		// Aqui recupero o objeto usuário selecionado do meu ArrayList interno, ...
 		final int      index = comboUsuarios.getSelectedIndex() - 1;
@@ -418,7 +455,7 @@ public class TelaKeyChestMain extends JFrame {
 		ConfigDAO.deleteDefaultUser();
 		
 		// Caso tenha sido selecionado, configuro um novo usuário padrão
-		if (botaoPadrao.isSelected())
+		if (buttonUserDefault.isSelected())
 			ConfigDAO.insertDefaultUser(selected);
 		
 	}
@@ -460,7 +497,7 @@ public class TelaKeyChestMain extends JFrame {
 				
 				// salvo os dados no banco e atualizo a tabela
 				screen.commit();
-				listener_query();
+				listenerSearch();
 				
 			}
 			
@@ -474,7 +511,7 @@ public class TelaKeyChestMain extends JFrame {
 	/******************** Tratamento de Eventos de Menu da Tabela *************************/
 	
 	/** Edita os dados de uma credencial selecionada da tabela */
-	private void actionCredentialEditar() {
+	private void actionEntryEdit() {
 		
 		// Recuperando a credencial associada na ArrayList
 		Credentials selected = tableResultado.getSelectedRow() >= 0 ? credentialsList.get(tableResultado.getSelectedRow()) : null;
@@ -510,7 +547,7 @@ public class TelaKeyChestMain extends JFrame {
 					
 					// salvo os dados no banco e atualizo a tabela
 					screen.commit();
-					listener_query();
+					listenerSearch();
 					
 				}
 				
@@ -524,7 +561,7 @@ public class TelaKeyChestMain extends JFrame {
 	}
 	
 	/** Remove do banco de dados uma credencial selecionada na tabela */
-	private void actionCredentialDelete() {
+	private void actionEntryDelete() {
 		
 		// Recuperando a credencial associada na ArrayList
 		Credentials selected = tableResultado.getSelectedRow() >= 0 ? credentialsList.get(tableResultado.getSelectedRow()) : null;
@@ -548,14 +585,14 @@ public class TelaKeyChestMain extends JFrame {
 			}
 			
 			// Atualiza a tabela
-			listener_query();
+			listenerSearch();
 			
 		}
 		
 	}
 	
 	/** Copia o login de uma linha selecionada para a área de transferência */
-	private void action_table_copy_login() {
+	private void actionLoginCopy() {
 		
 		try {
 			
@@ -571,7 +608,7 @@ public class TelaKeyChestMain extends JFrame {
 	}
 	
 	/** Copia a senha de uma linha selecionada para a área de transferência */
-	private void action_table_copy_pwd() {
+	private void actionPassCopy() {
 		
 		try {
 			
@@ -622,7 +659,7 @@ public class TelaKeyChestMain extends JFrame {
 	/************************** Implementação dos Utilitários *****************************/
 	
 	/** Inicializa o comboBox com os dados de usuário recuperados do banco */
-	private void action_fill_combo() {
+	private void actionFillCombos() {
 		
 		// Limpando o combo
 		comboUsuarios.removeAllItems();
@@ -637,7 +674,7 @@ public class TelaKeyChestMain extends JFrame {
 	}
 	
 	// Seleciona no combo o usuário padrão, apenas na instanciação desta tela
-	private void action_select_default() {
+	private void actionSelectDefaultUser() {
 		
 		final Owner retrieved = ConfigDAO.getDefaultUser();
 		
@@ -657,7 +694,7 @@ public class TelaKeyChestMain extends JFrame {
 	}
 	
 	/** Atualiza a quantidade de credenciais encontradas no fim da tabela. */
-	private void util_update_size() {
+	private void utilSizeUpdate() {
 		
 		final int size = this.credentialsList.size();
 		

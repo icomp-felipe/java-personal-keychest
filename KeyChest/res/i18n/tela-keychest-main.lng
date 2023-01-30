@@ -1,0 +1,34 @@
+########## Dicas
+hint-text-servico  = Nome do serviço ou site
+hint-button-clear  = Limpa o campo de texto do serviço
+hint-combo-usuario = Nome do usuário pertencente ao serviço
+hint-button-create = Cria um novo usuário
+hint-button-update = Atualiza o nome do usuário selecionado
+hint-button-delete = Exclui o usuário selecionado (apenas quando este não possui nenhum serviço registrado em seu nome)
+hint-button-toggle = Marca/desmarca o usuário selecionado como padrão
+hint-button-newkey = Adiciona uma nova chave ao sistema
+hint-button-exit   = Sai do sistema
+
+########## Métodos
+! TelaKeychestMain::actionUserCreate
+kchest-user-create-title     = KeyChest v.2.0 - Criar Usuário
+kchest-user-create-dialog    = Digite um nome de usuário no campo abaixo:
+kchest-user-create-success   = Usuário registrado com sucesso!
+kchest-user-create-duplica   = Falha ao registrar usuário!\n\
+                               Já existe outro usuário registrado com este mesmo nome!
+kchest-user-create-exception = Falha ao registrar usuário!\n\
+                               Verifique o console para mais informações.
+
+! TelaKeychestMain::actionUserUpdate
+kchest-user-update-title     = KeyChest v.2.0 - Atualizar Usuário
+kchest-user-update-dialog    = Digite um novo nome de usuário no campo abaixo:
+kchest-user-update-confirm   = O usuário selecionado será atualizado da seguinte forma:\n\
+                               \n\
+                               %s → %s\n\
+                               \n\
+                               Deseja continuar?
+kchest-user-update-success   = Usuário atualizado com sucesso!
+kchest-user-update-duplica   = Falha ao atualizar usuário!\n\
+                               Já existe outro usuário registrado com este mesmo nome!
+kchest-user-update-exception = Falha ao atualizar usuário!\n\
+                               Verifique o console para mais informações.

@@ -1,5 +1,6 @@
 package com.phill.keychest.controller;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 import com.phill.libs.*;
@@ -8,66 +9,30 @@ import com.phill.keychest.model.*;
 
 /** Realiza a interface da classe "Owner" entre o BD e a aplicação.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.0, 04/05/2020 */
+ *  @version 2.0, 30/JAN/2023 */
 public class OwnerDAO {
 	
-	/** Insere um novo usuário no banco de dados.
-	 *  @param name - nome de usuário
-	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
-	 *  Neste caso, o console deve ser consultado. */
-	public static boolean insert(final String name) {
+	/** Insere/atualiza um usuário no banco de dados.
+	 *  @param owner - novo usuário
+	 *  @throws IOException quando os arquivos sql estão inacessíveis por algum motivo
+	 *  @throws SQLException quando ocorre algum erro de banco de dados */
+	public static void commit(final Owner owner) throws IOException, SQLException {
 		
-		try {
+		String sql   = owner.isNewRecord() ? "owner-create.sql" : "owner-update.sql";
+		String query = ResourceManager.getSQLString(true, sql, owner.getCommitData());
+		Connection c = Database.INSTANCE.getConnection();
+		Statement st = c.createStatement();
 			
-			String query = ResourceManager.getSQLString(true, "owner-insert.sql", name);
-			Connection c = Database.INSTANCE.getConnection();
-			Statement st = c.createStatement();
-			
-			st.executeUpdate(query);
-			
-			st.close();
-			c .close();
-			
-		} catch (SQLIntegrityConstraintViolationException exception) {
-			return false;
-		}
-		catch (Exception exception) {
-			exception.printStackTrace();
-			return false;
-		}
+		st.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
 		
-		return true;
+		ResultSet rs = st.getGeneratedKeys();
 		
-	}
-	
-	/** Atualiza dados de um usuário no banco de dados.
-	 *  @param owner - usuário selecionado
-	 *  @param name - novo nome de usuário
-	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
-	 *  Neste caso, o console deve ser consultado. */
-	public static boolean update(final Owner owner, final String name) {
-		
-		try {
+		if (rs.next())
+			owner.setID(rs.getInt(1));
 			
-			String query = ResourceManager.getSQLString(true, "owner-update.sql", name, owner.getID());
-			Connection c = Database.INSTANCE.getConnection();
-			Statement st = c.createStatement();
+		st.close();
+		c .close();
 			
-			st.executeUpdate(query);
-			
-			st.close();
-			c .close();
-			
-		} catch (SQLIntegrityConstraintViolationException exception) {
-			return false;
-		}
-		catch (Exception exception) {
-			exception.printStackTrace();
-			return false;
-		}
-		
-		return true;
-		
 	}
 	
 	/** Remove um usuário do banco de dados (quando este não tem mais nenhuma credencial cadastrada).

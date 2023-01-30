@@ -11,11 +11,11 @@ import com.phill.libs.ui.*;
 
 /** Implementa a tela de cadastro e edição de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.2, 11/05/2020 */
+ *  @version 2.0, 30/JAN/2023 */
 public class PanelCredentials extends JPanel {
 
 	// Serial da JFrame
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 5375410754155482772L;
 	
 	// Atributos gráficos
 	private final JTextField textServico, textLogin;

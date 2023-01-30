@@ -132,7 +132,7 @@ public class Credentials implements JTableRowData {
 	 *  @return Array de {@link Object} com os dados prontos para exibição na tabela. */
 	@Override
 	public Object[] getRowData() {
-		return new Object[] { getService(), getOwner().getName(), getLogin(), getPassword(), getPasswordLength() };
+		return new Object[] { getService(), getOwner().getName(), getLogin(), getPassword(), getPasswordLength(), getUpdatedDate() };
 	}
 
 }

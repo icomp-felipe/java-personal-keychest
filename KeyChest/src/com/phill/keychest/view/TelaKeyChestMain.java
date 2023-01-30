@@ -142,7 +142,7 @@ public class TelaKeyChestMain extends JFrame {
 		getContentPane().add(panelListagem);
 		
 		JButton buttonKeyCreate = new JButton(addIcon);
-		buttonKeyCreate.addActionListener((event) -> action_credential_new());
+		buttonKeyCreate.addActionListener((event) -> actionEntryCreate());
 		buttonKeyCreate.setToolTipText(bundle.getString("hint-button-newkey"));
 		buttonKeyCreate.setBounds(95, 110, 30, 25);
 		getContentPane().add(buttonKeyCreate);
@@ -164,13 +164,16 @@ public class TelaKeyChestMain extends JFrame {
 		
 		TableColumnModel columnModel = tableResultado.getColumnModel();
 		
+		columnModel.getColumn(1).setCellRenderer(centerRenderer);
 		columnModel.getColumn(4).setCellRenderer(centerRenderer);
+		columnModel.getColumn(5).setCellRenderer(centerRenderer);
 		
-		/*columnModel.getColumn(0).setPreferredWidth(165);
-		columnModel.getColumn(1).setPreferredWidth(195);
-		columnModel.getColumn(2).setPreferredWidth(195);
-		columnModel.getColumn(3).setPreferredWidth(95);
-		columnModel.getColumn(4).setPreferredWidth(25);*/
+		columnModel.getColumn(0).setPreferredWidth(127);
+		columnModel.getColumn(1).setPreferredWidth( 43);
+		columnModel.getColumn(2).setPreferredWidth(180);
+		columnModel.getColumn(3).setPreferredWidth( 82);
+		columnModel.getColumn(4).setPreferredWidth( 15);
+		columnModel.getColumn(5).setPreferredWidth( 96);
 		
 		JScrollPane scrollListagem = new JScrollPane(tableResultado);
 		scrollListagem.setBounds(10, 35, 915, 305);
@@ -484,8 +487,8 @@ public class TelaKeyChestMain extends JFrame {
 	
 	/********************** Tratamento de Eventos de Credenciais **************************/
 	
-	/** Exibe a tela de criação de uma nova credencial */
-	private void action_credential_new() {
+	/** Exibe a tela de criação de uma nova credencial. */
+	private void actionEntryCreate() {
 		
 		// Por conveniência, se um usuário foi selecionado no combo, o seleciono na próxima tela
 		final Owner owner = comboUsuarios.getSelectedIndex() > 0 ? ownerList.get(comboUsuarios.getSelectedIndex()-1) : null;
@@ -493,11 +496,10 @@ public class TelaKeyChestMain extends JFrame {
 		// Construindo a janela...
 		PanelCredentials screen = new PanelCredentials(ownerList);
 		screen.setOwner(owner);
-		screen.setOpaque(false);
 		
 		JOptionPane pane = new JOptionPane(screen, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION) {
 			
-			private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = -8833981707282178268L;
 
 			@Override
 			public void selectInitialValue() {
@@ -507,7 +509,7 @@ public class TelaKeyChestMain extends JFrame {
 		};
 		
 		// Building dialog
-		pane.createDialog("Nova Credencial").setVisible(true);
+		pane.createDialog("KeyChest v.2.0 - Nova Entrada").setVisible(true);
 		
 		try {
 			

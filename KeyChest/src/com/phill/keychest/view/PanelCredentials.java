@@ -1,15 +1,20 @@
 package com.phill.keychest.view;
 
 import java.awt.*;
+import java.sql.*;
 import java.util.*;
+
 import javax.swing.*;
 import javax.swing.border.*;
-import com.phill.keychest.model.*;
-import com.phill.keychest.controller.*;
+
 import com.phill.libs.*;
 import com.phill.libs.ui.*;
+import com.phill.libs.i18n.*;
 
-/** Implementa a tela de cadastro e edição de credenciais.
+import com.phill.keychest.model.*;
+import com.phill.keychest.controller.*;
+
+/** Implementa a tela de cadastro e edição de entradas.
  *  @author Felipe André - fass@icomp.ufam.edu.br
  *  @version 2.0, 30/JAN/2023 */
 public class PanelCredentials extends JPanel {
@@ -27,11 +32,14 @@ public class PanelCredentials extends JPanel {
 	private final ArrayList<Owner> ownerList;
 	private final Credentials credentials;
 	
+	// Carregando bundle de idiomas
+	private final static PropertyBundle bundle = new PropertyBundle("i18n/panel-credentials", null);
+	
 	/** Construtor utilizado para a criação de uma nova credencial.
 	 *  Este construtor chama o principal com uma credencial nula, indicando que é um cadastro.
 	 *  @param ownerList - lista de usuários cadastrados */
 	public PanelCredentials(final ArrayList<Owner> ownerList) {
-		this(ownerList,null);
+		this(ownerList, null);
 	}
 	
 	/** Construtor utilizado para a edição de uma credencial já existente.
@@ -39,7 +47,7 @@ public class PanelCredentials extends JPanel {
 	 *  @param ownerList - lista de usuários cadastrados
 	 *  @param credentials - credencial a ser editada. Quando nula, significa que é um cadastro! 
 	 *  @wbp.parser.constructor */
-	public PanelCredentials(final ArrayList<Owner> ownerList, Credentials credentials) {
+	public PanelCredentials(final ArrayList<Owner> ownerList, final Credentials credentials) {
 		
 		// Alimentando atributos locais
 		this.ownerList   = ownerList;
@@ -70,6 +78,7 @@ public class PanelCredentials extends JPanel {
 		textServico = new JTextField();
 		textServico.setFont(fonte);
 		textServico.setForeground(color);
+		textServico.setToolTipText(bundle.getString("hint-text-servico"));
 		textServico.setBounds(80, 10, 350, 25);
 		add(textServico);
 		
@@ -82,6 +91,7 @@ public class PanelCredentials extends JPanel {
 		textLogin = new JTextField();
 		textLogin.setFont(fonte);
 		textLogin.setForeground(color);
+		textLogin.setToolTipText(bundle.getString("hint-text-login"));
 		textLogin.setBounds(80, 50, 350, 25);
 		add(textLogin);
 		
@@ -95,14 +105,15 @@ public class PanelCredentials extends JPanel {
 		textSenha.setEchoChar('*');
 		textSenha.setFont(fonte);
 		textSenha.setForeground(color);
+		textSenha.setToolTipText(bundle.getString("hint-text-senha"));
 		textSenha.setBounds(80, 90, 310, 25);
 		add(textSenha);
 		
-		JToggleButton mostraSenha = new JToggleButton(viewIcon);
-		mostraSenha.setToolTipText("Exibe ou oculta a senha");
-		mostraSenha.setBounds(405, 90, 25, 25);
-		mostraSenha.addActionListener((event) -> { if (mostraSenha.isSelected()) textSenha.setEchoChar((char)0); else textSenha.setEchoChar('*'); textSenha.requestFocus(); } );
-		add(mostraSenha);
+		JToggleButton buttonToggle = new JToggleButton(viewIcon);
+		buttonToggle.setBounds(405, 90, 25, 25);
+		buttonToggle.setToolTipText(bundle.getString("hint-button-mostra"));
+		buttonToggle.addActionListener((event) -> { if (buttonToggle.isSelected()) textSenha.setEchoChar((char)0); else textSenha.setEchoChar('*'); textSenha.requestFocus(); } );
+		add(buttonToggle);
 		
 		JLabel labelUsuario = new JLabel("Usuário:");
 		labelUsuario.setHorizontalAlignment(JLabel.RIGHT);
@@ -113,10 +124,11 @@ public class PanelCredentials extends JPanel {
 		comboUsuarios = new JComboBox<String>();
 		comboUsuarios.setFont(fonte);
 		comboUsuarios.setForeground(color);
+		comboUsuarios.setToolTipText(bundle.getString("hint-combo-usuarios"));
 		comboUsuarios.setBounds(80, 130, 350, 25);
 		add(comboUsuarios);
 		
-		// Constrói essa parte (datas) apenas na tela de edição, quanto 'credentials' não é nula
+		// Constrói essa parte (datas) apenas na tela de edição, quando 'credentials' não é nula
 		if (credentials != null) {
 		
 			JLabel labelCreated = new JLabel("Criado em");
@@ -159,7 +171,7 @@ public class PanelCredentials extends JPanel {
 		
 	}
 	
-	/** Carrega os dados da credencial informada na tela. */
+	/** Carrega os dados de uma entrada para a tela. */
 	private void load() {
 		
 		final String lastUpdated = this.credentials.getUpdatedDate() == null ? "-" : this.credentials.getUpdatedDate();
@@ -175,8 +187,7 @@ public class PanelCredentials extends JPanel {
 		
 	}
 	
-	/** Salva as alterações de credencial no banco de dados. De acordo com
-	 *  o modo, este método sabe decidir se deve inserir ou atualizar. */
+	/** Salva as alterações de credencial no banco de dados. */
 	public void commit() {
 		
 		// Recuperando dados da tela
@@ -185,10 +196,13 @@ public class PanelCredentials extends JPanel {
 		final String passwd  = new String(textSenha.getPassword());
 		final Owner  owner   = comboUsuarios.getSelectedIndex() > 0 ? ownerList.get(comboUsuarios.getSelectedIndex()-1) : null;
 		
+		// Recuperando o título das janelas de diálogo
+		final String title = (this.credentials == null) ? bundle.getString("pcred-commit-title-new") : bundle.getString("pcred-commit-title-upd");
+		
 		// Validação de nome de serviço: este não pode ser vazio
 		if (service.isEmpty()) {
 			
-			AlertDialog.error("O nome de serviço não foi especificado");
+			AlertDialog.error(title, "O nome de serviço não foi especificado");
 			return;
 			
 		}
@@ -196,7 +210,7 @@ public class PanelCredentials extends JPanel {
 		// Validação de usuário: algum deve ser selecionado
 		if (owner == null) {
 			
-			AlertDialog.error("Nenhum usuário foi selecionado");
+			AlertDialog.error(title, "Nenhum usuário foi selecionado");
 			return;
 			
 		}
@@ -213,19 +227,24 @@ public class PanelCredentials extends JPanel {
 		credentials.setOwner   (owner  );
 		
 		// Salvando alterações no banco de dados
-		boolean status = (this.credentials == null) ? CredentialsDAO.insert(credentials) : CredentialsDAO.update(credentials);
-		
-		// Imprimindo mensagem de status
-		if (status)
-			if (this.credentials == null)
-				AlertDialog.info("Credencial cadastrada com sucesso!");
-			else
-				AlertDialog.info("Credencial atualizada com sucesso!");
-		else
-			if (this.credentials == null)
-				AlertDialog.error("Falha ao cadastrar credencial.\nTalvez este serviço já tenha sido cadastrado para o usuário selecionado.");
-			else
-				AlertDialog.error("Falha ao atualizar credencial.\nTalvez este serviço já tenha sido cadastrado para o usuário selecionado.");
+		try {
+			
+			CredentialsDAO.commit(credentials);
+			
+			AlertDialog.info(title, bundle.getString("pcred-commit-success"));
+			
+		}
+		catch (SQLIntegrityConstraintViolationException exception) {
+			
+			AlertDialog.error(title, bundle.getString("pcred-commit-duplica"));
+			
+		}
+		catch (Exception exception) {
+			
+			exception.printStackTrace();
+			AlertDialog.error(title, bundle.getString("pcred-commit-exception"));
+			
+		}
 		
 	}
 	
@@ -238,7 +257,7 @@ public class PanelCredentials extends JPanel {
 		
 	}
 	
-	/** Retorna o componente que deve ter foco inicial no JOptionPane */
+	/** @return Componente que deve ter foco inicial no JOptionPane. */
 	public JComponent getFocusField() {
 		return this.textServico;
 	}

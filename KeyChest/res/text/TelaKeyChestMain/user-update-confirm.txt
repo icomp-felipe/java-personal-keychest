@@ -1,4 +1,0 @@
-O nome do(a) usuário(a) "%s"
-será atualizado.
-
-Deseja continuar?

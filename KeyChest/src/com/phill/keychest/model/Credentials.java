@@ -108,6 +108,11 @@ public class Credentials implements JTableRowData {
 		return PhillsDateParser.retrieveDate(this.updated,PhillsDateFormatter.AWT_DATE_TIME);
 	}
 	
+	/** @return 'true' if this instance is a new database record (id = 0);<br>'false' otherwise. */
+	public boolean isNewRecord() {
+		return this.id == 0;
+	}
+	
 	/*************************** Bloco de Getters Especiais *******************************/
 	
 	/** Recupera o tamanho da senha. Esta é zero quando o campo é nulo ou realmente vazio.
@@ -118,16 +123,10 @@ public class Credentials implements JTableRowData {
 
 	/** Monta um array com os dados de inserção no BD.
 	 *  @return Array de {@link Object} com os dados prontos pro insert. */
-	public Object[] getInsertFields() {
-		return new Object[]{ getService(), getLogin(), getPassword(), getOwner().getID() };
+	public Object[] getCommitFields() {
+		return new Object[]{ getService(), getLogin(), getPassword(), getOwner().getID(), this.id };
 	}
 
-	/** Monta um array com os dados de atualização no BD.
-	 *  @return Array de {@link Object} com os dados prontos pro update. */
-	public Object[] getUpdateFields() {
-		return new Object[] { getService(), getLogin(), getPassword(), getOwner().getID(), getID() };
-	}
-	
 	/** Monta um array com os dados dispostos nas colunas da JTable.
 	 *  @return Array de {@link Object} com os dados prontos para exibição na tabela. */
 	@Override

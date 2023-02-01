@@ -9,59 +9,30 @@ import com.phill.keychest.model.*;
 
 /** Realiza a interface da classe "Credentials" entre o BD e a aplicação.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 1.0, 04/05/2020 */
+ *  @version 2.0, 01/FEV/2023 */
 public class CredentialsDAO {
 	
 	/** Insere uma nova credencial no banco de dados.
 	 *  @param credentials - credencial
-	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
-	 *  Neste caso, o console deve ser consultado. */
-	public static boolean insert(final Credentials credentials) {
+	 *  @throws IOException quando os arquivos sql estão inacessíveis por algum motivo
+	 *  @throws SQLException quando ocorre algum erro de banco de dados */
+	public static void commit(final Credentials credentials) throws IOException, SQLException {
 		
-		try {
+		String sql   = credentials.isNewRecord() ? "credentials-create.sql" : "credentials-update.sql";
+		String query = ResourceManager.getSQLString(true, sql, credentials.getCommitFields());
+		Connection c = Database.INSTANCE.getConnection();
+		Statement st = c.createStatement();
 			
-			String query = ResourceManager.getSQLString(true, "credentials-insert.sql", credentials.getInsertFields());
-			Connection c = Database.INSTANCE.getConnection();
-			Statement st = c.createStatement();
-			
-			st.executeUpdate(query);
-			
-			st.close();
-			c .close();
-			
-		} catch (Exception exception) {
-			exception.printStackTrace();
-			return false;
-		}
+		st.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
 		
-		return true;
+		ResultSet rs = st.getGeneratedKeys();
 		
-	}
-	
-	/** Atualiza dados de uma credencial no banco de dados.
-	 *  @param credentials - credencial
-	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
-	 *  Neste caso, o console deve ser consultado. */
-	public static boolean update(final Credentials credentials) {
+		if (rs.next())
+			credentials.setID(rs.getInt(1));
 		
-		try {
+		st.close();
+		c .close();
 			
-			String query = ResourceManager.getSQLString(true, "credentials-update.sql", credentials.getUpdateFields());
-			Connection c = Database.INSTANCE.getConnection();
-			Statement st = c.createStatement();
-			
-			st.executeUpdate(query);
-			
-			st.close();
-			c .close();
-			
-		} catch (Exception exception) {
-			exception.printStackTrace();
-			return false;
-		}
-		
-		return true;
-		
 	}
 	
 	/** Remove uma credencial do banco de dados.

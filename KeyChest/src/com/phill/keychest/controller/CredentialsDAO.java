@@ -1,5 +1,6 @@
 package com.phill.keychest.controller;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 import com.phill.libs.*;
@@ -65,28 +66,19 @@ public class CredentialsDAO {
 	
 	/** Remove uma credencial do banco de dados.
 	 *  @param credentials - credencial
-	 *  @return 'true' caso a operação tenha sido realizada com sucesso ou 'false' caso algum problema ocorra.
-	 *  Neste caso, o console deve ser consultado. */
-	public static boolean delete(final Credentials credentials) {
+	 *  @throws IOException quando os arquivos sql estão inacessíveis por algum motivo
+	 *  @throws SQLException quando ocorre algum erro de banco de dados */
+	public static void delete(final Credentials credentials) throws IOException, SQLException {
 		
-		try {
+		String query = ResourceManager.getSQLString(false, "credentials-delete.sql", credentials.getID());
+		Connection c = Database.INSTANCE.getConnection();
+		Statement st = c.createStatement();
 			
-			String query = ResourceManager.getSQLString(false, "credentials-delete.sql", credentials.getID());
-			Connection c = Database.INSTANCE.getConnection();
-			Statement st = c.createStatement();
+		st.executeUpdate(query);
 			
-			st.executeUpdate(query);
+		st.close();
+		c .close();
 			
-			st.close();
-			c .close();
-			
-		} catch (Exception exception) {
-			exception.printStackTrace();
-			return false;
-		}
-		
-		return true;
-		
 	}
 	
 	/** Lista credenciais de acordo com os filtros informados via parâmetro.

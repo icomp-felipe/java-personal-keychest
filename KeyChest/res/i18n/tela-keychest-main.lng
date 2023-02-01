@@ -50,3 +50,10 @@ kchest-user-update-exception = Falha ao atualizar usuário!\n\
 kchest-user-toggle-title     = KeyChest v.2.0 - Usuário Padrão
 kchest-user-toggle-exception = Falha ao atualizar usuário padrão!\n\
                                Verifique o console para mais informações.
+
+! TelaKeychestMain::actionEntryDelete
+kchest-entry-delete-title     = KeyChest v.2.0 - Removendo Entrada
+kchest-entry-delete-dialog    = A entrada selecionada será removida permanentemente!\n\
+                                Deseja continuar?
+kchest-entry-delete-exception = Falha ao remover a entrada selecionada!\n\
+                                Verifique o console para mais informações.

@@ -534,7 +534,7 @@ public class TelaKeyChestMain extends JFrame {
 	
 	/******************** Tratamento de Eventos de Menu da Tabela *************************/
 	
-	/** Edita os dados de uma credencial selecionada da tabela */
+	/** Edita os dados de uma credencial selecionada da tabela. */
 	private void actionEntryEdit() {
 		
 		// Recuperando a credencial associada na ArrayList
@@ -559,7 +559,7 @@ public class TelaKeyChestMain extends JFrame {
 			};
 			
 			// Building dialog
-			pane.createDialog("Editar Credencial").setVisible(true);
+			pane.createDialog("KeyChest v.2.0 - Editar Credencial").setVisible(true);
 			
 			try {
 				
@@ -584,7 +584,7 @@ public class TelaKeyChestMain extends JFrame {
 		
 	}
 	
-	/** Remove do banco de dados uma credencial selecionada na tabela */
+	/** Remove do banco de dados uma entrada selecionada na tabela. */
 	private void actionEntryDelete() {
 		
 		// Recuperando a credencial associada na ArrayList
@@ -594,22 +594,32 @@ public class TelaKeyChestMain extends JFrame {
 		if (selected != null) {
 			
 			// Construo a mensagem de aviso...
-			String message = ResourceManager.getText(this,"cred-deletion-confirm.txt",0);
-			int choice = AlertDialog.dialog(message);
+			String title  = bundle.getString("kchest-entry-delete-title");
+			String dialog = bundle.getString("kchest-entry-delete-dialog");
 			
 			// e se a opção "OK" foi escolhida...
-			if (choice == AlertDialog.OK_OPTION) {
+			if (AlertDialog.dialog(title, dialog) == AlertDialog.OK_OPTION) {
 				
-				// removo a credencial da base de dados e exibo uma mensagem
-				if (CredentialsDAO.delete(selected))
-					AlertDialog.info("Credencial removida com sucesso!");
-				else
-					AlertDialog.error("Falha ao remover credencial.\nFavor verificar o console do sistema.");
+				try {
+					
+					// removo a credencial da base de dados e exibo uma mensagem
+					CredentialsDAO.delete(selected);
+					
+				}
+				catch (Exception exception) {
+					
+					exception.printStackTrace();
+					AlertDialog.error(title, bundle.getString("kchest-entry-delete-exception"));
+					
+				}
+				finally {
+					
+					// Atualiza a tabela
+					listenerSearch();
+					
+				}
 				
 			}
-			
-			// Atualiza a tabela
-			listenerSearch();
 			
 		}
 		

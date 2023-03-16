@@ -329,7 +329,7 @@ public class TelaKeyChestMain extends JFrame {
 		
 		// Exibindo o diálogo
 		String title = bundle.getString("kchest-user-create-title");
-		String user  = AlertDialog.input(title, bundle.getString("kchest-user-create-dialog"));
+		String user  = AlertDialog.input(this, title, bundle.getString("kchest-user-create-dialog"));
 		
 		// Se entrei com um nome válido...
 		if ((user != null) && (!user.isEmpty())) {
@@ -343,7 +343,7 @@ public class TelaKeyChestMain extends JFrame {
 				// ...o insiro no banco de dados e, ...
 				OwnerDAO.commit(owner);
 				
-				AlertDialog.info(title, bundle.getString("kchest-user-create-success"));
+				AlertDialog.info(this, title, bundle.getString("kchest-user-create-success"));
 				
 				// ...por fim, atualizo o combo de usuários e seleciono o novo usuário criado
 				actionFillCombos();
@@ -352,13 +352,13 @@ public class TelaKeyChestMain extends JFrame {
 			}
 			catch (SQLIntegrityConstraintViolationException exception) {
 				
-				AlertDialog.error(title, bundle.getString("kchest-user-create-duplica"));
+				AlertDialog.error(this, title, bundle.getString("kchest-user-create-duplica"));
 				
 			}
 			catch (Exception exception) {
 				
 				exception.printStackTrace();
-				AlertDialog.error(title, bundle.getString("kchest-user-create-exception"));
+				AlertDialog.error(this, title, bundle.getString("kchest-user-create-exception"));
 				
 			}
 			
@@ -378,13 +378,13 @@ public class TelaKeyChestMain extends JFrame {
 		String dialog = bundle.getFormattedString("kchest-user-delete-confirm", selected.getName());
 		
 		// e, se desejo mesmo excluir...
-		if (AlertDialog.dialog(title, dialog) == AlertDialog.OK_OPTION) {
+		if (AlertDialog.dialog(this, title, dialog) == AlertDialog.OK_OPTION) {
 			
 			try {
 				
 				OwnerDAO.delete(selected);
 				
-				AlertDialog.info(title, bundle.getString("kchest-user-delete-success"));
+				AlertDialog.info(this, title, bundle.getString("kchest-user-delete-success"));
 				
 				// Por fim, atualizo o combo de usuários 
 				actionFillCombos();
@@ -392,13 +392,13 @@ public class TelaKeyChestMain extends JFrame {
 			}
 			catch (SQLIntegrityConstraintViolationException exception) {
 				
-				AlertDialog.error(title, bundle.getString("kchest-user-delete-constraint"));
+				AlertDialog.error(this, title, bundle.getString("kchest-user-delete-constraint"));
 				
 			}
 			catch (Exception exception) {
 				
 				exception.printStackTrace();
-				AlertDialog.error(title, bundle.getString("kchest-user-delete-exception"));
+				AlertDialog.error(this, title, bundle.getString("kchest-user-delete-exception"));
 				
 			}
 			
@@ -411,7 +411,7 @@ public class TelaKeyChestMain extends JFrame {
 		
 		// Exibindo o diálogo
 		String title = bundle.getString("kchest-user-update-title");
-		String user  = AlertDialog.input(title, bundle.getString("kchest-user-update-dialog"));
+		String user  = AlertDialog.input(this, title, bundle.getString("kchest-user-update-dialog"));
 		
 		// Se entrei com um nome válido...
 		if ((user != null) && (!user.isEmpty()) ) {
@@ -427,7 +427,7 @@ public class TelaKeyChestMain extends JFrame {
 			String dialog = bundle.getFormattedString("kchest-user-update-confirm", selected.getName(), user);
 		
 			// e, se desejo mesmo atualizar...
-			if (AlertDialog.dialog(title, dialog) == AlertDialog.OK_OPTION) {
+			if (AlertDialog.dialog(this, title, dialog) == AlertDialog.OK_OPTION) {
 			
 				try {
 					
@@ -435,7 +435,7 @@ public class TelaKeyChestMain extends JFrame {
 					selected.setName(user);
 					OwnerDAO.commit(selected);
 					
-					AlertDialog.info(title, bundle.getString("kchest-user-update-success"));
+					AlertDialog.info(this, title, bundle.getString("kchest-user-update-success"));
 					
 					// Por fim, atualizo o combo de usuários 
 					actionFillCombos();
@@ -443,13 +443,13 @@ public class TelaKeyChestMain extends JFrame {
 				}
 				catch (SQLIntegrityConstraintViolationException exception) {
 					
-					AlertDialog.error(title, bundle.getString("kchest-user-update-duplica"));
+					AlertDialog.error(this, title, bundle.getString("kchest-user-update-duplica"));
 					
 				}
 				catch (Exception exception) {
 					
 					exception.printStackTrace();
-					AlertDialog.error(title, bundle.getString("kchest-user-update-exception"));
+					AlertDialog.error(this, title, bundle.getString("kchest-user-update-exception"));
 					
 				}
 				
@@ -479,7 +479,7 @@ public class TelaKeyChestMain extends JFrame {
 		catch (Exception exception) {
 			
 			exception.printStackTrace();
-			AlertDialog.error(bundle.getString("kchest-user-toggle-title"), bundle.getString("kchest-user-toggle-exception"));
+			AlertDialog.error(this, bundle.getString("kchest-user-toggle-title"), bundle.getString("kchest-user-toggle-exception"));
 			
 		}
 		
@@ -598,7 +598,7 @@ public class TelaKeyChestMain extends JFrame {
 			String dialog = bundle.getString("kchest-entry-delete-dialog");
 			
 			// e se a opção "OK" foi escolhida...
-			if (AlertDialog.dialog(title, dialog) == AlertDialog.OK_OPTION) {
+			if (AlertDialog.dialog(this, title, dialog) == AlertDialog.OK_OPTION) {
 				
 				try {
 					
@@ -609,7 +609,7 @@ public class TelaKeyChestMain extends JFrame {
 				catch (Exception exception) {
 					
 					exception.printStackTrace();
-					AlertDialog.error(title, bundle.getString("kchest-entry-delete-exception"));
+					AlertDialog.error(this, title, bundle.getString("kchest-entry-delete-exception"));
 					
 				}
 				finally {

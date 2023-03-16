@@ -221,7 +221,7 @@ public class TelaKeyChestLogin extends JFrame {
 							
 			final String errors = bundle.getFormattedString("klogin-save-errors", fieldLogger.getErrorString());
 							
-			AlertDialog.error(getTitle(), errors);
+			AlertDialog.error(this, getTitle(), errors);
 			fieldLogger.clear(); return;
 											
 		}

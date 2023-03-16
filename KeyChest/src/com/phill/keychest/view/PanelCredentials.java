@@ -202,7 +202,7 @@ public class PanelCredentials extends JPanel {
 		// Validação de nome de serviço: este não pode ser vazio
 		if (service.isEmpty()) {
 			
-			AlertDialog.error(title, "O nome de serviço não foi especificado");
+			AlertDialog.error(this, title, "O nome de serviço não foi especificado");
 			return;
 			
 		}
@@ -210,7 +210,7 @@ public class PanelCredentials extends JPanel {
 		// Validação de usuário: algum deve ser selecionado
 		if (owner == null) {
 			
-			AlertDialog.error(title, "Nenhum usuário foi selecionado");
+			AlertDialog.error(this, title, "Nenhum usuário foi selecionado");
 			return;
 			
 		}
@@ -231,18 +231,18 @@ public class PanelCredentials extends JPanel {
 			
 			CredentialsDAO.commit(credentials);
 			
-			AlertDialog.info(title, bundle.getString("pcred-commit-success"));
+			AlertDialog.info(this, title, bundle.getString("pcred-commit-success"));
 			
 		}
 		catch (SQLIntegrityConstraintViolationException exception) {
 			
-			AlertDialog.error(title, bundle.getString("pcred-commit-duplica"));
+			AlertDialog.error(this, title, bundle.getString("pcred-commit-duplica"));
 			
 		}
 		catch (Exception exception) {
 			
 			exception.printStackTrace();
-			AlertDialog.error(title, bundle.getString("pcred-commit-exception"));
+			AlertDialog.error(this, title, bundle.getString("pcred-commit-exception"));
 			
 		}
 		

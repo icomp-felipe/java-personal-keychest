@@ -21,7 +21,7 @@ import com.phill.libs.table.TableUtils;
 
 /** Tela principal do sistema de gerenciamento de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 2.0, 30/JAN/2023 */
+ *  @version 2.1, 16/MAR/2023 */
 public class TelaKeyChestMain extends JFrame {
 	
 	// Serial da JFrame
@@ -48,7 +48,7 @@ public class TelaKeyChestMain extends JFrame {
 
 	/** Constrói a interface gráfica e inicializa as variáveis de controle */
 	public TelaKeyChestMain(final String serverURL) {
-		super("KeyChest - build 20230130 [" + serverURL + "]");
+		super("KeyChest - build 20230316 [" + serverURL + "]");
 		
 		// Inicializando atributos gráficos
 		GraphicsHelper instance = GraphicsHelper.getInstance();
@@ -138,6 +138,7 @@ public class TelaKeyChestMain extends JFrame {
 		JPanel panelListagem = new JPanel();
 		panelListagem.setBorder(instance.getTitledBorder("Listagem            "));
 		panelListagem.setBounds(10, 110, 940, 375);
+		panelListagem.setOpaque(false);
 		panelListagem.setLayout(null);
 		getContentPane().add(panelListagem);
 		

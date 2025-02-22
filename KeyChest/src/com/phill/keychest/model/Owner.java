@@ -1,7 +1,7 @@
 package com.phill.keychest.model;
 
 /** Modelagem da entidade "Owner". Contém o nome de usuário e seu ID.
- *  @author Felipe André - fass@icomp.ufam.edu.br
+ *  @author Felipe André - felipeandre.eng@gmail.com
  *  @version 1.1, 11/05/2020 */
 public class Owner {
 	

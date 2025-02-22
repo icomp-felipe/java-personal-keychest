@@ -8,7 +8,7 @@ import com.phill.keychest.bd.*;
 import com.phill.keychest.model.*;
 
 /** Realiza a interface da classe "Credentials" entre o BD e a aplicação.
- *  @author Felipe André - fass@icomp.ufam.edu.br
+ *  @author Felipe André - felipeandre.eng@gmail.com
  *  @version 2.0, 01/FEV/2023 */
 public class CredentialsDAO {
 	

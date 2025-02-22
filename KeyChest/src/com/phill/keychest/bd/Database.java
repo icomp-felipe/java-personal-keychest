@@ -6,7 +6,7 @@ import com.phill.libs.*;
 import com.mchange.v2.c3p0.*;
 
 /** Implementa os métodos de acesso ao banco de dados.
- *  @author Felipe André - fass@icomp.ufam.edu.br
+ *  @author Felipe André - felipeandre.eng@gmail.com
  *  @version 1.1, 08/05/2020 */
 public enum Database {
 	

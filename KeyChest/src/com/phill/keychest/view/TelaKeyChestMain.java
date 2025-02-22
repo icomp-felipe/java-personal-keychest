@@ -20,7 +20,7 @@ import com.phill.libs.table.PWDTableCellRenderer;
 import com.phill.libs.table.TableUtils;
 
 /** Tela principal do sistema de gerenciamento de credenciais.
- *  @author Felipe André - fass@icomp.ufam.edu.br
+ *  @author Felipe André - felipeandre.eng@gmail.com
  *  @version 2.2, 22/FEV/2025 */
 public class TelaKeyChestMain extends JFrame {
 	

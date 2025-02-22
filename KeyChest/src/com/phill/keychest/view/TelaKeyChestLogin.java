@@ -12,7 +12,7 @@ import com.phill.libs.mfvapi.*;
 import com.phill.keychest.bd.*;
 
 /** Classe TelaKeychestLogin - cria um ambiente gráfico para o usuário fazer login no sistema
- *  @author Felipe André - fass@icomp.ufam.edu.br
+ *  @author Felipe André - felipeandre.eng@gmail.com
  *  @version 2.1, 22/FEV/2025 */
 public class TelaKeyChestLogin extends JFrame {
 

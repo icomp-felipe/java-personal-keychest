@@ -15,7 +15,7 @@ import com.phill.keychest.model.*;
 import com.phill.keychest.controller.*;
 
 /** Implementa a tela de cadastro e edição de entradas.
- *  @author Felipe André - fass@icomp.ufam.edu.br
+ *  @author Felipe André - felipeandre.eng@gmail.com
  *  @version 2.1, 22/FEV/2025 */
 public class PanelCredentials extends JPanel {
 

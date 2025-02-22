@@ -7,7 +7,7 @@ import com.phill.keychest.bd.*;
 import com.phill.keychest.model.*;
 
 /** Realiza a interface de controle de usuário padrão entre o BD e a aplicação.
- *  @author Felipe André - fass@icomp.ufam.edu.br
+ *  @author Felipe André - felipeandre.eng@gmail.com
  *  @version 1.0, 11/05/2020 */
 public class ConfigDAO {
 	

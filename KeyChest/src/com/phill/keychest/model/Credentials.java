@@ -8,7 +8,7 @@ import com.phill.libs.time.PhillsDateParser;
 
 /** Modelagem da entidade "Credentials". Contém os dados de login, senha,
  *  serviço e usuário.
- *  @author Felipe André - fass@icomp.ufam.edu.br
+ *  @author Felipe André - felipeandre.eng@gmail.com
  *  @version 1.1, 11/05/2020
  *  @see JTableRowData */
 public class Credentials implements JTableRowData {

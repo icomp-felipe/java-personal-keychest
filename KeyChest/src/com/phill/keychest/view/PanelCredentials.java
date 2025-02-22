@@ -16,7 +16,7 @@ import com.phill.keychest.controller.*;
 
 /** Implementa a tela de cadastro e edição de entradas.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 2.0, 30/JAN/2023 */
+ *  @version 2.1, 22/FEV/2025 */
 public class PanelCredentials extends JPanel {
 
 	// Serial da JFrame
@@ -112,7 +112,7 @@ public class PanelCredentials extends JPanel {
 		JToggleButton buttonToggle = new JToggleButton(viewIcon);
 		buttonToggle.setBounds(405, 90, 25, 25);
 		buttonToggle.setToolTipText(bundle.getString("hint-button-mostra"));
-		buttonToggle.addActionListener((event) -> { if (buttonToggle.isSelected()) textSenha.setEchoChar((char)0); else textSenha.setEchoChar('*'); textSenha.requestFocus(); } );
+		buttonToggle.addActionListener((_) -> { if (buttonToggle.isSelected()) textSenha.setEchoChar((char)0); else textSenha.setEchoChar('*'); textSenha.requestFocus(); } );
 		add(buttonToggle);
 		
 		JLabel labelUsuario = new JLabel("Usuário:");

@@ -21,7 +21,7 @@ import com.phill.libs.table.TableUtils;
 
 /** Tela principal do sistema de gerenciamento de credenciais.
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 2.1, 16/MAR/2023 */
+ *  @version 2.2, 22/FEV/2025 */
 public class TelaKeyChestMain extends JFrame {
 	
 	// Serial da JFrame
@@ -83,14 +83,14 @@ public class TelaKeyChestMain extends JFrame {
 		painelServico.setLayout(null);
 		
 		textServico = new JTextField();
-		textServico.addKeyListener((KeyReleasedListener) (event) -> listenerSearch());
+		textServico.addKeyListener((KeyReleasedListener) (_) -> listenerSearch());
 		textServico.setToolTipText(bundle.getString("hint-text-servico"));
 		textServico.setFont(fonte);
 		textServico.setBounds(10, 30, 390, 25);
 		painelServico.add(textServico);
 		
 		JButton buttonServiceClear = new JButton(clearIcon);
-		buttonServiceClear.addActionListener((event) -> actionClear());
+		buttonServiceClear.addActionListener((_) -> actionClear());
 		buttonServiceClear.setToolTipText(bundle.getString("hint-button-clear"));
 		buttonServiceClear.setBounds(410, 30, 30, 25);
 		painelServico.add(buttonServiceClear);
@@ -104,32 +104,32 @@ public class TelaKeyChestMain extends JFrame {
 		
 		comboUsuarios = new JComboBox<String>();
 		comboUsuarios.setFont(fonte);
-		comboUsuarios.addActionListener((event) -> listenerCombo());
-		comboUsuarios.addActionListener((event) -> listenerSearch ());
+		comboUsuarios.addActionListener((_) -> listenerCombo());
+		comboUsuarios.addActionListener((_) -> listenerSearch ());
 		comboUsuarios.setToolTipText(bundle.getString("hint-combo-usuario"));
 		comboUsuarios.setBounds(10, 30, 258, 25);
 		panelUsuario.add(comboUsuarios);
 		
 		JButton buttonUserCreate = new JButton(addIcon);
-		buttonUserCreate.addActionListener((event) -> actionUserCreate());
+		buttonUserCreate.addActionListener((_) -> actionUserCreate());
 		buttonUserCreate.setToolTipText(bundle.getString("hint-button-create"));
 		buttonUserCreate.setBounds(285, 30, 30, 25);
 		panelUsuario.add(buttonUserCreate);
 		
 		buttonUserUpdate = new JButton(updateIcon);
-		buttonUserUpdate.addActionListener((event) -> actionUserUpdate());
+		buttonUserUpdate.addActionListener((_) -> actionUserUpdate());
 		buttonUserUpdate.setToolTipText(bundle.getString("hint-button-update"));
 		buttonUserUpdate.setBounds(330, 30, 30, 25);
 		panelUsuario.add(buttonUserUpdate);
 		
 		buttonUserDelete = new JButton(deleteIcon);
-		buttonUserDelete.addActionListener((event) -> actionUserDelete());
+		buttonUserDelete.addActionListener((_) -> actionUserDelete());
 		buttonUserDelete.setToolTipText(bundle.getString("hint-button-delete"));
 		buttonUserDelete.setBounds(375, 30, 30, 25);
 		panelUsuario.add(buttonUserDelete);
 		
 		buttonUserDefault = new JToggleButton(defaultIcon);
-		buttonUserDefault.addActionListener((event) -> actionToggleDefault());
+		buttonUserDefault.addActionListener((_) -> actionToggleDefault());
 		buttonUserDefault.setToolTipText(bundle.getString("hint-button-toggle"));
 		buttonUserDefault.setBounds(420, 30, 30, 25);
 		panelUsuario.add(buttonUserDefault);
@@ -143,7 +143,7 @@ public class TelaKeyChestMain extends JFrame {
 		getContentPane().add(panelListagem);
 		
 		JButton buttonKeyCreate = new JButton(addIcon);
-		buttonKeyCreate.addActionListener((event) -> actionEntryCreate());
+		buttonKeyCreate.addActionListener((_) -> actionEntryCreate());
 		buttonKeyCreate.setToolTipText(bundle.getString("hint-button-newkey"));
 		buttonKeyCreate.setBounds(95, 110, 30, 25);
 		getContentPane().add(buttonKeyCreate);
@@ -193,7 +193,7 @@ public class TelaKeyChestMain extends JFrame {
 		getContentPane().add(labelInfo);
 		
 		JButton buttonExit = new JButton(exitIcon);
-		buttonExit.addActionListener((event) -> dispose());
+		buttonExit.addActionListener((_) -> dispose());
 		buttonExit.setToolTipText(bundle.getString("hint-button-exit"));
 		buttonExit.setBounds(915, 500, 30, 25);
 		getContentPane().add(buttonExit);
@@ -226,10 +226,10 @@ public class TelaKeyChestMain extends JFrame {
 		KeyStroke cpSenha = KeyStroke.getKeyStroke(KeyEvent.VK_S     , InputEvent.CTRL_DOWN_MASK);
 		
 		// Definindo ações dos itens de menu
-		Action actionEditar  = new ShortcutAction("Editar"       , KeyEvent.VK_E, editar , (event) -> actionEntryEdit  ());
-		Action actionDeletar = new ShortcutAction("Excluir"      , null         , deletar, (event) -> actionEntryDelete());
-		Action actionCpLogin = new ShortcutAction("Copiar Login" , KeyEvent.VK_L, cpLogin, (event) -> actionLoginCopy  ());
-		Action actionCpSenha = new ShortcutAction("Copiar Senha" , KeyEvent.VK_S, cpSenha, (event) -> actionPassCopy   ());
+		Action actionEditar  = new ShortcutAction("Editar"       , KeyEvent.VK_E, editar , (_) -> actionEntryEdit  ());
+		Action actionDeletar = new ShortcutAction("Excluir"      , null         , deletar, (_) -> actionEntryDelete());
+		Action actionCpLogin = new ShortcutAction("Copiar Login" , KeyEvent.VK_L, cpLogin, (_) -> actionLoginCopy  ());
+		Action actionCpSenha = new ShortcutAction("Copiar Senha" , KeyEvent.VK_S, cpSenha, (_) -> actionPassCopy   ());
 		
 		// Declarando os itens de menu
 		JMenuItem itemEditar  = new JMenuItem(actionEditar)  ; popupMenu.add(itemEditar);

@@ -13,7 +13,7 @@ import com.phill.keychest.bd.*;
 
 /** Classe TelaKeychestLogin - cria um ambiente gráfico para o usuário fazer login no sistema
  *  @author Felipe André - fass@icomp.ufam.edu.br
- *  @version 2.0, 20/JAN/2023 */
+ *  @version 2.1, 22/FEV/2025 */
 public class TelaKeyChestLogin extends JFrame {
 
 	// Serial
@@ -116,7 +116,7 @@ public class TelaKeyChestLogin extends JFrame {
 		
 		radioLocal = new JRadioButton("Local");
 		radioLocal.setToolTipText(bundle.getString("hint-radio-local"));
-		radioLocal.addActionListener((event) -> utilAddressLabel());
+		radioLocal.addActionListener((_) -> utilAddressLabel());
 		radioLocal.setSelected(true);
 		radioLocal.setFont(dialg);
 		radioLocal.setBounds(105, 30, 70, 20);
@@ -124,7 +124,7 @@ public class TelaKeyChestLogin extends JFrame {
 		
 		radioRemota = new JRadioButton("Remota");
 		radioRemota.setToolTipText(bundle.getString("hint-radio-remota"));
-		radioRemota.addActionListener((event) -> utilAddressLabel());
+		radioRemota.addActionListener((_) -> utilAddressLabel());
 		radioRemota.setFont(dialg);
 		radioRemota.setBounds(175, 30, 100, 20);
 		painelOpcoes.add(radioRemota);
@@ -149,19 +149,19 @@ public class TelaKeyChestLogin extends JFrame {
 		
 		// Botões
 		buttonSair = new JButton(exitIcon);
-		buttonSair.addActionListener((event) -> dispose());
+		buttonSair.addActionListener((_) -> dispose());
 		buttonSair.setToolTipText(bundle.getString("hint-button-exit"));
 		buttonSair.setBounds(335, 228, 30, 25);
 		getContentPane().add(buttonSair);
 		
 		buttonClear = new JButton(clearIcon);
-		buttonClear.addActionListener((event) -> actionClear());
+		buttonClear.addActionListener((_) -> actionClear());
 		buttonClear.setToolTipText(bundle.getString("hint-button-clear"));
 		buttonClear.setBounds(377, 228, 30, 25);
 		getContentPane().add(buttonClear);
 		
 		buttonLogin = new JButton(loginIcon);
-		buttonLogin.addActionListener((event) -> actionLogin());
+		buttonLogin.addActionListener((_) -> actionLogin());
 		buttonLogin.setToolTipText(bundle.getString("hint-button-login"));
 		buttonLogin.setBounds(419, 228, 30, 25);
 		getContentPane().add(buttonLogin);

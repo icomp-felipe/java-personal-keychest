@@ -48,7 +48,7 @@ public class TelaKeyChestMain extends JFrame {
 
 	/** Constrói a interface gráfica e inicializa as variáveis de controle */
 	public TelaKeyChestMain(final String serverURL) {
-		super("KeyChest - build 20230316 [" + serverURL + "]");
+		super("KeyChest - build 20250222 [" + serverURL + "]");
 		
 		// Inicializando atributos gráficos
 		GraphicsHelper instance = GraphicsHelper.getInstance();
